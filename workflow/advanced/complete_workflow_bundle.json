@@ -1,0 +1,994 @@
+{
+ "connectionId": "396ee9ee-d438-4e06-a322-65fd38c39de1",
+ "title": "The Last Mile: NYC Delivery Pressure (complete)",
+ "description": "SDSC workshop edition. Loads NYC Open Data from URL, measures commercial vehicle tickets against loading zones per resident, scores each precinct and creates a Builder map.",
+ "config": {
+  "schemaVersion": "1.0.0",
+  "connectionProvider": "bigquery",
+  "title": "The Last Mile: NYC Delivery Pressure (complete)",
+  "nodes": [
+   {
+    "id": "imp-violations",
+    "type": "generic",
+    "position": {
+     "x": 80,
+     "y": 80
+    },
+    "data": {
+     "name": "native.importurl",
+     "version": "1",
+     "title": "1. Import violations",
+     "label": "Import from URL",
+     "inputs": [
+      {
+       "name": "url",
+       "title": "Source URL",
+       "type": "String",
+       "value": "https://raw.githubusercontent.com/juliagreig/sdsc26-last-mile-workshop/main/data/violations_fy2026_by_precinct_month.csv"
+      },
+      {
+       "name": "autoguessing",
+       "title": "Automatically guess column data types in the imported table",
+       "type": "Boolean",
+       "value": true
+      }
+     ]
+    }
+   },
+   {
+    "id": "imp-precincts",
+    "type": "generic",
+    "position": {
+     "x": 80,
+     "y": 240
+    },
+    "data": {
+     "name": "native.importurl",
+     "version": "1",
+     "title": "1. Import precincts",
+     "label": "Import from URL",
+     "inputs": [
+      {
+       "name": "url",
+       "title": "Source URL",
+       "type": "String",
+       "value": "https://raw.githubusercontent.com/juliagreig/sdsc26-last-mile-workshop/main/data/precincts_study_area.geojson"
+      },
+      {
+       "name": "autoguessing",
+       "title": "Automatically guess column data types in the imported table",
+       "type": "Boolean",
+       "value": true
+      }
+     ]
+    }
+   },
+   {
+    "id": "imp-loading",
+    "type": "generic",
+    "position": {
+     "x": 80,
+     "y": 560
+    },
+    "data": {
+     "name": "native.importurl",
+     "version": "1",
+     "title": "1. Import loading zones",
+     "label": "Import from URL",
+     "inputs": [
+      {
+       "name": "url",
+       "title": "Source URL",
+       "type": "String",
+       "value": "https://raw.githubusercontent.com/juliagreig/sdsc26-last-mile-workshop/main/data/loading_zone_signs_manhattan.csv"
+      },
+      {
+       "name": "autoguessing",
+       "title": "Automatically guess column data types in the imported table",
+       "type": "Boolean",
+       "value": true
+      }
+     ]
+    }
+   },
+   {
+    "id": "n-population",
+    "type": "generic",
+    "position": {
+     "x": 80,
+     "y": 400
+    },
+    "data": {
+     "name": "native.customsql",
+     "version": "2.0.0",
+     "title": "1. Population by precinct",
+     "label": "Custom SQL Select",
+     "inputs": [
+      {
+       "name": "sourcea",
+       "title": "Source table a",
+       "type": "Table",
+       "value": null
+      },
+      {
+       "name": "sourceb",
+       "title": "Source table b",
+       "type": "Table",
+       "value": null
+      },
+      {
+       "name": "sourcec",
+       "title": "Source table c",
+       "type": "Table",
+       "value": null
+      },
+      {
+       "name": "sql",
+       "title": "SQL SELECT statement",
+       "type": "StringSql",
+       "value": "SELECT * FROM UNNEST(ARRAY<STRUCT<precinct STRING, population INT64>>[('1', 80892), ('5', 45946), ('6', 62800), ('7', 57405), ('9', 67739), ('10', 48183), ('13', 99451), ('14', 29357), ('17', 67132), ('18', 48161)])"
+      }
+     ]
+    }
+   },
+   {
+    "id": "n-loading-reproject",
+    "type": "generic",
+    "position": {
+     "x": 272,
+     "y": 560
+    },
+    "data": {
+     "name": "native.customsql",
+     "version": "2.0.0",
+     "title": "1. Convert coordinates",
+     "label": "Custom SQL Select",
+     "inputs": [
+      {
+       "name": "sourcea",
+       "title": "Source table a",
+       "type": "Table",
+       "value": null
+      },
+      {
+       "name": "sourceb",
+       "title": "Source table b",
+       "type": "Table",
+       "value": null
+      },
+      {
+       "name": "sourcec",
+       "title": "Source table c",
+       "type": "Table",
+       "value": null
+      },
+      {
+       "name": "sql",
+       "title": "SQL SELECT statement",
+       "type": "StringSql",
+       "value": "WITH p AS (\n  SELECT order_number, on_street, from_street, to_street, sign_description,\n    SAFE_CAST(sign_x_coord AS FLOAT64) * 0.3048006096012192 - 300000.0 AS dx,\n    7462536.301142955 - SAFE_CAST(sign_y_coord AS FLOAT64) * 0.3048006096012192 AS dy\n  FROM `$a`\n  WHERE SAFE_CAST(sign_x_coord AS FLOAT64) IS NOT NULL AND SAFE_CAST(sign_y_coord AS FLOAT64) IS NOT NULL\n), r AS (\n  SELECT *, POW(SQRT(dx*dx + dy*dy) / 12287232.615120513, 1.0/0.6540820912037886) AS t, ATAN2(dx, dy)/0.6540820912037886 + (-1.2915436464758039) AS lam FROM p\n), s_p0 AS (SELECT *, ACOS(-1)/2 - 2*ATAN(t) AS p0 FROM r),\ns_p1 AS (SELECT *, ACOS(-1)/2 - 2*ATAN(t*POW((1-0.08181919104281579*SIN(p0))/(1+0.08181919104281579*SIN(p0)), 0.08181919104281579/2)) AS p1 FROM s_p0),\ns_p2 AS (SELECT *, ACOS(-1)/2 - 2*ATAN(t*POW((1-0.08181919104281579*SIN(p1))/(1+0.08181919104281579*SIN(p1)), 0.08181919104281579/2)) AS p2 FROM s_p1),\ns_p3 AS (SELECT *, ACOS(-1)/2 - 2*ATAN(t*POW((1-0.08181919104281579*SIN(p2))/(1+0.08181919104281579*SIN(p2)), 0.08181919104281579/2)) AS p3 FROM s_p2),\ns_p4 AS (SELECT *, ACOS(-1)/2 - 2*ATAN(t*POW((1-0.08181919104281579*SIN(p3))/(1+0.08181919104281579*SIN(p3)), 0.08181919104281579/2)) AS p4 FROM s_p3)\nSELECT order_number, on_street, from_street, to_street, sign_description,\n  CASE WHEN UPPER(sign_description) LIKE '%TRUCK%' THEN 'Truck Loading Zone'\n       WHEN UPPER(sign_description) LIKE '%NLZ%' OR UPPER(sign_description) LIKE '%NEIGHBORHOOD LOADING%' THEN 'Neighborhood Loading Zone'\n       WHEN UPPER(sign_description) LIKE '%HOTEL%' THEN 'Hotel Loading Zone'\n       ELSE 'Other Loading Zone' END AS zone_type,\n  ST_GEOGPOINT(lam*180/ACOS(-1), p4*180/ACOS(-1)) AS geom\nFROM s_p4"
+      }
+     ]
+    }
+   },
+   {
+    "id": "n-precinct-filter",
+    "type": "generic",
+    "position": {
+     "x": 272,
+     "y": 240
+    },
+    "data": {
+     "name": "native.where",
+     "version": "1",
+     "title": "2. Study area precincts",
+     "label": "Where",
+     "inputs": [
+      {
+       "name": "source",
+       "title": "Source table",
+       "type": "Table",
+       "value": null
+      },
+      {
+       "name": "expression",
+       "title": "Filter expression",
+       "type": "StringSql",
+       "value": "CAST(precinct AS STRING) IN ('1','5','6','7','9','10','13','14','17','18')"
+      }
+     ]
+    }
+   },
+   {
+    "id": "n-violation-filter",
+    "type": "generic",
+    "position": {
+     "x": 272,
+     "y": 80
+    },
+    "data": {
+     "name": "native.where",
+     "version": "1",
+     "title": "2. Filter codes and dates",
+     "label": "Where",
+     "inputs": [
+      {
+       "name": "source",
+       "title": "Source table",
+       "type": "Table",
+       "value": null
+      },
+      {
+       "name": "expression",
+       "title": "Filter expression",
+       "type": "StringSql",
+       "value": "CAST(violation_code AS INT64) IN (11,14,16,31,46,47,89) AND CAST(month AS TIMESTAMP) >= CAST(@date_from AS TIMESTAMP) AND CAST(month AS TIMESTAMP) <= CAST(@date_to AS TIMESTAMP)"
+      }
+     ]
+    }
+   },
+   {
+    "id": "n-violation-groupby",
+    "type": "generic",
+    "position": {
+     "x": 464,
+     "y": 80
+    },
+    "data": {
+     "name": "native.groupby",
+     "version": "1",
+     "title": "2. Count by precinct",
+     "label": "Group by",
+     "inputs": [
+      {
+       "name": "source",
+       "title": "Source table",
+       "type": "Table",
+       "value": null
+      },
+      {
+       "name": "columns",
+       "title": "Aggregation",
+       "type": "SelectColumnAggregation",
+       "value": "violations,sum"
+      },
+      {
+       "name": "groupby",
+       "title": "Group by",
+       "type": "Column",
+       "value": "violation_precinct"
+      }
+     ]
+    }
+   },
+   {
+    "id": "n-violation-cast",
+    "type": "generic",
+    "position": {
+     "x": 656,
+     "y": 80
+    },
+    "data": {
+     "name": "native.cast",
+     "version": "2",
+     "title": "2. Precinct as text",
+     "label": "Cast",
+     "inputs": [
+      {
+       "name": "source",
+       "title": "Source table",
+       "type": "Table",
+       "value": null
+      },
+      {
+       "name": "column",
+       "title": "Column",
+       "type": "Column",
+       "value": "violation_precinct"
+      },
+      {
+       "name": "newtype",
+       "title": "New type",
+       "type": "SelectionType",
+       "value": "STRING"
+      }
+     ]
+    }
+   },
+   {
+    "id": "n-loading-spatialjoin",
+    "type": "generic",
+    "position": {
+     "x": 464,
+     "y": 560
+    },
+    "data": {
+     "name": "native.spatialjoin",
+     "version": "2",
+     "title": "2. Zones in precincts",
+     "label": "Spatial Join",
+     "inputs": [
+      {
+       "name": "maintable",
+       "title": "Left table",
+       "type": "Table",
+       "value": null
+      },
+      {
+       "name": "secondarytable",
+       "title": "Right table",
+       "type": "Table",
+       "value": null
+      },
+      {
+       "name": "maintablejoincolumn",
+       "title": "Key geo column in left table",
+       "type": "Column",
+       "value": "geom"
+      },
+      {
+       "name": "maintablecolumns",
+       "title": "Left table columns",
+       "type": "ColumnsForJoin",
+       "value": "[{\"name\": \"order_number\", \"joinname\": \"order_number\"}]"
+      },
+      {
+       "name": "secondarytablejoincolumn",
+       "title": "Key geo column in right table",
+       "type": "Column",
+       "value": "geom"
+      },
+      {
+       "name": "secondarytablecolumns",
+       "title": "Right table columns",
+       "type": "ColumnsForJoin",
+       "value": "[{\"name\": \"precinct\", \"joinname\": \"precinct\"}]"
+      },
+      {
+       "name": "jointype",
+       "title": "Join type",
+       "type": "Selection",
+       "value": "inner"
+      },
+      {
+       "name": "predicate",
+       "title": "Spatial predicate",
+       "type": "Selection",
+       "value": "intersects"
+      }
+     ]
+    }
+   },
+   {
+    "id": "n-loading-groupby",
+    "type": "generic",
+    "position": {
+     "x": 656,
+     "y": 560
+    },
+    "data": {
+     "name": "native.groupby",
+     "version": "1",
+     "title": "2. Count zones by precinct",
+     "label": "Group by",
+     "inputs": [
+      {
+       "name": "source",
+       "title": "Source table",
+       "type": "Table",
+       "value": null
+      },
+      {
+       "name": "columns",
+       "title": "Aggregation",
+       "type": "SelectColumnAggregation",
+       "value": "order_number,count"
+      },
+      {
+       "name": "groupby",
+       "title": "Group by",
+       "type": "Column",
+       "value": "precinct"
+      }
+     ]
+    }
+   },
+   {
+    "id": "n-join-pop",
+    "type": "generic",
+    "position": {
+     "x": 464,
+     "y": 240
+    },
+    "data": {
+     "name": "native.joinv2",
+     "version": "1",
+     "title": "3. Add population",
+     "label": "Join",
+     "inputs": [
+      {
+       "name": "lefttable",
+       "title": "Left table",
+       "type": "Table",
+       "value": null
+      },
+      {
+       "name": "righttable",
+       "title": "Right table",
+       "type": "Table",
+       "value": null
+      },
+      {
+       "name": "lefttablekeycolumn",
+       "title": "Key column in left table",
+       "type": "Column",
+       "value": "precinct"
+      },
+      {
+       "name": "lefttablecolumns",
+       "title": "Left table columns",
+       "type": "ColumnsForJoin",
+       "value": "[{\"name\": \"precinct\", \"joinname\": \"precinct\"}, {\"name\": \"geom\", \"joinname\": \"geom\"}]"
+      },
+      {
+       "name": "righttablekeycolumn",
+       "title": "Key column in right table",
+       "type": "Column",
+       "value": "precinct"
+      },
+      {
+       "name": "righttablecolumns",
+       "title": "Right table columns",
+       "type": "ColumnsForJoin",
+       "value": "[{\"name\": \"population\", \"joinname\": \"population\"}]"
+      },
+      {
+       "name": "jointype",
+       "title": "Join type",
+       "type": "Selection",
+       "value": "Left"
+      }
+     ]
+    }
+   },
+   {
+    "id": "n-join-violations",
+    "type": "generic",
+    "position": {
+     "x": 848,
+     "y": 240
+    },
+    "data": {
+     "name": "native.joinv2",
+     "version": "1",
+     "title": "3. Add violations",
+     "label": "Join",
+     "inputs": [
+      {
+       "name": "lefttable",
+       "title": "Left table",
+       "type": "Table",
+       "value": null
+      },
+      {
+       "name": "righttable",
+       "title": "Right table",
+       "type": "Table",
+       "value": null
+      },
+      {
+       "name": "lefttablekeycolumn",
+       "title": "Key column in left table",
+       "type": "Column",
+       "value": "precinct"
+      },
+      {
+       "name": "lefttablecolumns",
+       "title": "Left table columns",
+       "type": "ColumnsForJoin",
+       "value": "[{\"name\": \"precinct\", \"joinname\": \"precinct\"}, {\"name\": \"geom\", \"joinname\": \"geom\"}, {\"name\": \"population\", \"joinname\": \"population\"}]"
+      },
+      {
+       "name": "righttablekeycolumn",
+       "title": "Key column in right table",
+       "type": "Column",
+       "value": "violation_precinct"
+      },
+      {
+       "name": "righttablecolumns",
+       "title": "Right table columns",
+       "type": "ColumnsForJoin",
+       "value": "[{\"name\": \"violations_sum\", \"joinname\": \"violations\"}]"
+      },
+      {
+       "name": "jointype",
+       "title": "Join type",
+       "type": "Selection",
+       "value": "Left"
+      }
+     ]
+    }
+   },
+   {
+    "id": "n-join-supply",
+    "type": "generic",
+    "position": {
+     "x": 1040,
+     "y": 240
+    },
+    "data": {
+     "name": "native.joinv2",
+     "version": "1",
+     "title": "3. Add loading zones",
+     "label": "Join",
+     "inputs": [
+      {
+       "name": "lefttable",
+       "title": "Left table",
+       "type": "Table",
+       "value": null
+      },
+      {
+       "name": "righttable",
+       "title": "Right table",
+       "type": "Table",
+       "value": null
+      },
+      {
+       "name": "lefttablekeycolumn",
+       "title": "Key column in left table",
+       "type": "Column",
+       "value": "precinct"
+      },
+      {
+       "name": "lefttablecolumns",
+       "title": "Left table columns",
+       "type": "ColumnsForJoin",
+       "value": "[{\"name\": \"precinct\", \"joinname\": \"precinct\"}, {\"name\": \"geom\", \"joinname\": \"geom\"}, {\"name\": \"population\", \"joinname\": \"population\"}, {\"name\": \"violations\", \"joinname\": \"violations\"}]"
+      },
+      {
+       "name": "righttablekeycolumn",
+       "title": "Key column in right table",
+       "type": "Column",
+       "value": "precinct"
+      },
+      {
+       "name": "righttablecolumns",
+       "title": "Right table columns",
+       "type": "ColumnsForJoin",
+       "value": "[{\"name\": \"order_number_count\", \"joinname\": \"loading_supply\"}]"
+      },
+      {
+       "name": "jointype",
+       "title": "Join type",
+       "type": "Selection",
+       "value": "Left"
+      }
+     ]
+    }
+   },
+   {
+    "id": "n-create-demand",
+    "type": "generic",
+    "position": {
+     "x": 1232,
+     "y": 240
+    },
+    "data": {
+     "name": "native.selectexpression",
+     "version": "1",
+     "title": "3. Demand per 1k",
+     "label": "Create Column",
+     "inputs": [
+      {
+       "name": "source",
+       "title": "Source table",
+       "type": "Table",
+       "value": null
+      },
+      {
+       "name": "column",
+       "title": "Name for new column",
+       "type": "String",
+       "value": "demand_per_1k"
+      },
+      {
+       "name": "expression",
+       "title": "Expression",
+       "type": "StringSql",
+       "value": "violations / population * 1000"
+      }
+     ]
+    }
+   },
+   {
+    "id": "n-create-supply-ratio",
+    "type": "generic",
+    "position": {
+     "x": 1424,
+     "y": 240
+    },
+    "data": {
+     "name": "native.selectexpression",
+     "version": "1",
+     "title": "3. Supply per 1k",
+     "label": "Create Column",
+     "inputs": [
+      {
+       "name": "source",
+       "title": "Source table",
+       "type": "Table",
+       "value": null
+      },
+      {
+       "name": "column",
+       "title": "Name for new column",
+       "type": "String",
+       "value": "loading_per_1k"
+      },
+      {
+       "name": "expression",
+       "title": "Expression",
+       "type": "StringSql",
+       "value": "COALESCE(loading_supply, 0) / population * 1000"
+      }
+     ]
+    }
+   },
+   {
+    "id": "n-composite-score",
+    "type": "generic",
+    "position": {
+     "x": 1616,
+     "y": 240
+    },
+    "data": {
+     "name": "native.spatialcompositeunsupervised",
+     "version": "1.0.0",
+     "title": "3. Priority index",
+     "label": "Composite Score Unsupervised",
+     "inputs": [
+      {
+       "name": "source",
+       "title": "Source table",
+       "type": "Table",
+       "value": null
+      },
+      {
+       "name": "indexcol",
+       "title": "Column with unique geographic identifier",
+       "type": "Column",
+       "value": "precinct"
+      },
+      {
+       "name": "scoringmethod",
+       "title": "Scoring method",
+       "type": "Selection",
+       "value": "CUSTOM_WEIGHTS"
+      },
+      {
+       "name": "weights",
+       "title": "Variables and Weights",
+       "type": "ColumnNumber",
+       "value": "[[\"demand_per_1k\", 1, false], [\"loading_per_1k\", 1, true]]"
+      },
+      {
+       "name": "scaling",
+       "title": "Scaling function",
+       "type": "Selection",
+       "value": "MIN_MAX_SCALER"
+      },
+      {
+       "name": "aggregation",
+       "title": "Aggregation function",
+       "type": "Selection",
+       "value": "LINEAR"
+      },
+      {
+       "name": "correlationvar",
+       "title": "Correlation variable",
+       "type": "Column",
+       "value": "demand_per_1k"
+      },
+      {
+       "name": "correlationthr",
+       "title": "Correlation threshold",
+       "type": "Number",
+       "value": 0
+      },
+      {
+       "name": "outputformatting",
+       "title": "Output formatting",
+       "type": "Selection",
+       "value": "RETURN_RANGE"
+      },
+      {
+       "name": "returnrange",
+       "title": "Return range",
+       "type": "Range",
+       "value": "[0, 100]"
+      },
+      {
+       "name": "automaticnbuckets",
+       "title": "Define number of buckets automatically",
+       "type": "Boolean",
+       "value": false
+      },
+      {
+       "name": "nbuckets",
+       "title": "Number of buckets",
+       "type": "Number",
+       "value": 5
+      }
+     ]
+    }
+   },
+   {
+    "id": "n-join-score",
+    "type": "generic",
+    "position": {
+     "x": 1808,
+     "y": 240
+    },
+    "data": {
+     "name": "native.joinv2",
+     "version": "1",
+     "title": "3. Attach index",
+     "label": "Join",
+     "inputs": [
+      {
+       "name": "lefttable",
+       "title": "Left table",
+       "type": "Table",
+       "value": null
+      },
+      {
+       "name": "righttable",
+       "title": "Right table",
+       "type": "Table",
+       "value": null
+      },
+      {
+       "name": "lefttablekeycolumn",
+       "title": "Key column in left table",
+       "type": "Column",
+       "value": "precinct"
+      },
+      {
+       "name": "lefttablecolumns",
+       "title": "Left table columns",
+       "type": "ColumnsForJoin",
+       "value": "[{\"name\": \"precinct\", \"joinname\": \"precinct\"}, {\"name\": \"geom\", \"joinname\": \"geom\"}, {\"name\": \"population\", \"joinname\": \"population\"}, {\"name\": \"violations\", \"joinname\": \"violations\"}, {\"name\": \"loading_supply\", \"joinname\": \"loading_supply\"}, {\"name\": \"demand_per_1k\", \"joinname\": \"demand_per_1k\"}, {\"name\": \"loading_per_1k\", \"joinname\": \"loading_per_1k\"}]"
+      },
+      {
+       "name": "righttablekeycolumn",
+       "title": "Key column in right table",
+       "type": "Column",
+       "value": "precinct"
+      },
+      {
+       "name": "righttablecolumns",
+       "title": "Right table columns",
+       "type": "ColumnsForJoin",
+       "value": "[{\"name\": \"spatial_score\", \"joinname\": \"priority_index\"}]"
+      },
+      {
+       "name": "jointype",
+       "title": "Join type",
+       "type": "Selection",
+       "value": "Left"
+      }
+     ]
+    }
+   },
+   {
+    "id": "n-create-map",
+    "type": "generic",
+    "position": {
+     "x": 2000,
+     "y": 240
+    },
+    "data": {
+     "name": "native.createbuildermap",
+     "version": "2",
+     "title": "4. Create map",
+     "label": "Create Builder Map",
+     "inputs": [
+      {
+       "name": "sources",
+       "title": "Source tables",
+       "type": "Table",
+       "value": null
+      },
+      {
+       "name": "mapName",
+       "title": "Map name",
+       "type": "String",
+       "value": "The Last Mile: NYC Delivery Pressure"
+      },
+      {
+       "name": "mode",
+       "title": "Re-running mode",
+       "type": "Selection",
+       "value": "update"
+      }
+     ]
+    }
+   }
+  ],
+  "edges": [
+   {
+    "id": "e1",
+    "source": "imp-loading",
+    "target": "n-loading-reproject",
+    "sourceHandle": "result",
+    "targetHandle": "sourcea"
+   },
+   {
+    "id": "e2",
+    "source": "imp-precincts",
+    "target": "n-precinct-filter",
+    "sourceHandle": "result",
+    "targetHandle": "source"
+   },
+   {
+    "id": "e3",
+    "source": "imp-violations",
+    "target": "n-violation-filter",
+    "sourceHandle": "result",
+    "targetHandle": "source"
+   },
+   {
+    "id": "e4",
+    "source": "n-violation-filter",
+    "target": "n-violation-groupby",
+    "sourceHandle": "match",
+    "targetHandle": "source"
+   },
+   {
+    "id": "e5",
+    "source": "n-violation-groupby",
+    "target": "n-violation-cast",
+    "sourceHandle": "result",
+    "targetHandle": "source"
+   },
+   {
+    "id": "e6",
+    "source": "n-loading-reproject",
+    "target": "n-loading-spatialjoin",
+    "sourceHandle": "result",
+    "targetHandle": "maintable"
+   },
+   {
+    "id": "e7",
+    "source": "n-precinct-filter",
+    "target": "n-loading-spatialjoin",
+    "sourceHandle": "match",
+    "targetHandle": "secondarytable"
+   },
+   {
+    "id": "e8",
+    "source": "n-loading-spatialjoin",
+    "target": "n-loading-groupby",
+    "sourceHandle": "result",
+    "targetHandle": "source"
+   },
+   {
+    "id": "e9",
+    "source": "n-precinct-filter",
+    "target": "n-join-pop",
+    "sourceHandle": "match",
+    "targetHandle": "lefttable"
+   },
+   {
+    "id": "e10",
+    "source": "n-population",
+    "target": "n-join-pop",
+    "sourceHandle": "result",
+    "targetHandle": "righttable"
+   },
+   {
+    "id": "e11",
+    "source": "n-join-pop",
+    "target": "n-join-violations",
+    "sourceHandle": "result",
+    "targetHandle": "lefttable"
+   },
+   {
+    "id": "e12",
+    "source": "n-violation-cast",
+    "target": "n-join-violations",
+    "sourceHandle": "result",
+    "targetHandle": "righttable"
+   },
+   {
+    "id": "e13",
+    "source": "n-join-violations",
+    "target": "n-join-supply",
+    "sourceHandle": "result",
+    "targetHandle": "lefttable"
+   },
+   {
+    "id": "e14",
+    "source": "n-loading-groupby",
+    "target": "n-join-supply",
+    "sourceHandle": "result",
+    "targetHandle": "righttable"
+   },
+   {
+    "id": "e15",
+    "source": "n-join-supply",
+    "target": "n-create-demand",
+    "sourceHandle": "result",
+    "targetHandle": "source"
+   },
+   {
+    "id": "e16",
+    "source": "n-create-demand",
+    "target": "n-create-supply-ratio",
+    "sourceHandle": "result",
+    "targetHandle": "source"
+   },
+   {
+    "id": "e17",
+    "source": "n-create-supply-ratio",
+    "target": "n-composite-score",
+    "sourceHandle": "result",
+    "targetHandle": "source"
+   },
+   {
+    "id": "e18",
+    "source": "n-create-supply-ratio",
+    "target": "n-join-score",
+    "sourceHandle": "result",
+    "targetHandle": "lefttable"
+   },
+   {
+    "id": "e19",
+    "source": "n-composite-score",
+    "target": "n-join-score",
+    "sourceHandle": "result",
+    "targetHandle": "righttable"
+   },
+   {
+    "id": "e20",
+    "source": "n-join-score",
+    "target": "n-create-map",
+    "sourceHandle": "result",
+    "targetHandle": "sources"
+   },
+   {
+    "id": "e21",
+    "source": "n-loading-reproject",
+    "target": "n-create-map",
+    "sourceHandle": "result",
+    "targetHandle": "sources"
+   }
+  ],
+  "variables": [
+   {
+    "order": 0,
+    "name": "date_from",
+    "type": "String",
+    "value": "2025-07-01",
+    "scopes": [],
+    "displayName": "Start date",
+    "helperText": "First month to count, as YYYY-MM-DD (use the first day of a month). Data covers 2025-07-01 to 2026-06-30."
+   },
+   {
+    "order": 1,
+    "name": "date_to",
+    "type": "String",
+    "value": "2026-06-30",
+    "scopes": [],
+    "displayName": "End date",
+    "helperText": "Last month to count, as YYYY-MM-DD."
+   }
+  ],
+  "viewport": {
+   "x": 0,
+   "y": 0,
+   "zoom": 0.6
+  }
+ }
+}
