@@ -13,12 +13,12 @@ Rename it `3. Priority index` (double click the title).
 | Input | output of `3. Supply per 1k` |
 | Column with unique geographic identifier | `precinct` |
 | Scoring method | `CUSTOM_WEIGHTS` |
-| Variables and weights | Pick `demand_per_1k` and `loading_per_1k`, each with weight 1. Leave `demand_per_1k` on **Direct** and switch `loading_per_1k` to **Inverse** |
+| Variables and weights | `demand_per_1k` weight 1, left on **Direct**. `loading_per_1k` weight 1, switched to **Inverse** (click the arrow next to it). Set `population`, `violations` and `loading_supply` to weight **0** so they do not count |
 | Scaling function | `MIN_MAX_SCALER` |
 | Aggregation function | `LINEAR` |
 | Output formatting | `RETURN_RANGE`, from 0 to 100 |
 
-The variable list only shows your columns once the previous nodes have run, so run the workflow once before you configure this node.
+The variable list only shows your columns once the previous nodes have run, so run the workflow once before you configure this node. Only the two rates should count: if you forget to zero the other columns the ranking changes.
 
 **Why inverse?** More loading zones per resident means less pressure, so that variable has to push the score down, not up. Direct means a higher value raises the score. Inverse means a higher value lowers it.
 
