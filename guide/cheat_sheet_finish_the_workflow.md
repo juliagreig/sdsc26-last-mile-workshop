@@ -12,13 +12,15 @@ Rename it `3. Priority index` (double click the title).
 | --- | --- |
 | Input | output of `3. Supply per 1k` |
 | Column with unique geographic identifier | `precinct` |
-| Scoring method | Custom weights |
-| Variables and weights | `demand_per_1k` with weight 1. `loading_per_1k` with weight 1 and **inverse** turned on |
-| Scaling function | Min max scaler |
-| Aggregation function | Linear |
-| Output formatting | Return range, from 0 to 100 |
+| Scoring method | `CUSTOM_WEIGHTS` |
+| Variables and weights | Pick `demand_per_1k` and `loading_per_1k`, each with weight 1. Leave `demand_per_1k` on **Direct** and switch `loading_per_1k` to **Inverse** |
+| Scaling function | `MIN_MAX_SCALER` |
+| Aggregation function | `LINEAR` |
+| Output formatting | `RETURN_RANGE`, from 0 to 100 |
 
-**Why inverse?** More loading zones per resident means less pressure, so that variable has to push the score down, not up.
+The variable list only shows your columns once the previous nodes have run, so run the workflow once before you configure this node.
+
+**Why inverse?** More loading zones per resident means less pressure, so that variable has to push the score down, not up. Direct means a higher value raises the score. Inverse means a higher value lowers it.
 
 ## Node 2: Join
 
@@ -62,4 +64,4 @@ With the default settings the ranking should be:
 | 1 | 18.5 |
 | 5 | 0 |
 
-If your numbers differ, check that the `precinct` column is used as the key and that `loading_per_1k` has inverse turned on.
+If your numbers differ, check that the `precinct` column is used as the key and that `loading_per_1k` is set to Inverse.

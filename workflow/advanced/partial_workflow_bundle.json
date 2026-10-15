@@ -1,7 +1,7 @@
 {
  "connectionId": "396ee9ee-d438-4e06-a322-65fd38c39de1",
  "title": "The Last Mile: NYC Delivery Pressure (start here)",
- "description": "SDSC workshop edition. Loads NYC Open Data from URL, measures commercial vehicle tickets against loading zones per resident, scores each precinct and creates a Builder map.",
+ "description": "SDSC 2026 workshop, start here. Data loading, measuring and per resident rates are done. Add three nodes: Priority index, Attach index and Create map.",
  "config": {
   "schemaVersion": "1.0.0",
   "connectionProvider": "bigquery",
