@@ -2,6 +2,8 @@
 
 Hands-on workshop for SDSC 2026 New York. In about an hour you will go from open data to an interactive map with an AI agent, using a CARTO workflow.
 
+**Prefer a written guide with screenshots?** Open the [step by step guide](https://juliagreig.github.io/sdsc26-last-mile-workshop/) (source in [docs/](docs/index.html)). The text below is the short version.
+
 **What you will build:** a score from 0 to 100 for 10 NYPD precincts in Manhattan below 60th Street. High scores mean delivery trucks get lots of parking tickets while legal loading zones are scarce.
 
 ## Before you start
@@ -16,6 +18,7 @@ You need a CARTO account. If you do not have one, sign up for a free trial at [a
 | --- | --- |
 | `workflow/1_last_mile_START_HERE.sql` | The partial workflow. Data loading, measuring and per resident rates are done. You finish it live. |
 | `workflow/2_last_mile_COMPLETE.sql` | The complete workflow. Import this one if you get stuck or want to see the end result. |
+| `docs/index.html` | The illustrated step by step guide (published with GitHub Pages) |
 | `guide/cheat_sheet_finish_the_workflow.md` | Exact settings for the three nodes you add |
 | `guide/prompts.md` | Text to copy and paste (AI agent prompt, starter questions, styling steps) |
 | `data/` | The three source datasets (the workflows read them from this repo). Details in [data/README.md](data/README.md) |

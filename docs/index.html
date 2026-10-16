@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Last Mile Workshop Guide</title>
+<meta name="description" content="Step by step guide for the SDSC 2026 New York workshop: map NYC's delivery pressure points with CARTO Workflows, Builder and an AI agent.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#090E2A; --blue:#036FE2; --blue-soft:#E6F0FC; --off:#F2F6F9; --green:#47DB99; --green-soft:#E3F8EE;
+  --ink:#1A2038; --muted:#5B6379; --line:#DDE3EA; --card:#FFFFFF; --warn:#FFF4DB; --warn-line:#F6CF71;
+  --bg:#F2F6F9; --code:#EAF0F6;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#E7EBF3; --muted:#A3ACC2; --line:#2A3152; --card:#121838; --bg:#090E2A; --off:#0E1431;
+    --blue-soft:#10264A; --green-soft:#0F3326; --warn:#3A3012; --warn-line:#7A6320; --code:#1B2347; --blue:#5AA2F5;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#E7EBF3; --muted:#A3ACC2; --line:#2A3152; --card:#121838; --bg:#090E2A; --off:#0E1431;
+  --blue-soft:#10264A; --green-soft:#0F3326; --warn:#3A3012; --warn-line:#7A6320; --code:#1B2347; --blue:#5AA2F5;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:76px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.6;font-size:16px}
+a{color:var(--blue)}
+code,kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em;background:var(--code);padding:.1em .38em;border-radius:5px}
+.wrap{max-width:900px;margin:0 auto;padding:0 16px}
+
+/* top bar */
+.bar{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff}
+.bar .wrap{display:flex;align-items:center;gap:14px;height:56px}
+.bar b{font-weight:600;white-space:nowrap}
+.bar .grow{flex:1}
+.prog{height:8px;background:rgba(255,255,255,.18);border-radius:8px;overflow:hidden;min-width:70px;flex:1;max-width:260px}
+.prog i{display:block;height:100%;width:0;background:var(--green);transition:width .3s}
+.bar small{opacity:.85;white-space:nowrap}
+.bar button{background:transparent;border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:8px;padding:5px 10px;cursor:pointer;font:inherit;font-size:13px}
+
+/* hero */
+.hero{background:var(--navy);color:#fff;padding:44px 0 56px}
+.hero h1{font-size:clamp(28px,5vw,44px);line-height:1.15;margin:0 0 12px;letter-spacing:-.02em}
+.hero p{max-width:640px;color:#C9D2E6;margin:0 0 20px;font-size:18px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:99px;padding:5px 12px;font-size:14px}
+.chip.g{background:var(--green);color:var(--navy);border-color:var(--green);font-weight:600}
+
+/* layout */
+main{padding:0 0 60px}
+section{margin-top:28px}
+h2{font-size:26px;margin:0 0 6px;letter-spacing:-.01em}
+h3{font-size:18px;margin:26px 0 8px}
+.lead{color:var(--muted);margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-top:14px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.grid .card{margin-top:0}
+.grid h3{margin:0 0 6px;font-size:16px}
+.grid p{margin:0;color:var(--muted);font-size:15px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0;padding:0;list-style:none}
+.toc a{display:inline-block;text-decoration:none;background:var(--card);border:1px solid var(--line);color:var(--ink);padding:6px 12px;border-radius:99px;font-size:14px}
+.toc a:hover{border-color:var(--blue);color:var(--blue)}
+
+/* steps */
+.step{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-top:18px}
+.step>header{display:flex;gap:14px;align-items:center;padding:16px 20px;background:var(--off);border-bottom:1px solid var(--line)}
+.num{flex:none;width:38px;height:38px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;font-weight:700}
+.step.done .num{background:var(--green);color:var(--navy)}
+.step header h2{font-size:20px;margin:0}
+.step header .t{margin-left:auto;color:var(--muted);font-size:14px;white-space:nowrap}
+.body{padding:6px 20px 20px}
+.body p{margin:12px 0}
+ol.todo{list-style:none;counter-reset:s;padding:0;margin:14px 0}
+ol.todo>li{counter-increment:s;position:relative;display:flex;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+ol.todo>li:first-child{border-top:0}
+ol.todo input{flex:none;width:20px;height:20px;margin-top:3px;accent-color:var(--blue);cursor:pointer}
+ol.todo label{cursor:pointer;flex:1}
+ol.todo li.on label{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--line)}
+ol.todo li.on label *{text-decoration:none}
+
+figure{margin:16px 0 4px}
+figure img{display:block;max-width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:#fff}
+figcaption{font-size:14px;color:var(--muted);margin-top:6px}
+.pair{display:grid;gap:14px;grid-template-columns:1fr 1fr;align-items:start}
+.pair figure{margin:16px 0 4px}
+.pair.narrow{grid-template-columns:repeat(auto-fit,minmax(240px,300px));justify-content:start}
+@media(max-width:640px){.pair{grid-template-columns:1fr}}
+
+.see{background:var(--green-soft);border-left:4px solid var(--green);border-radius:8px;padding:12px 16px;margin:16px 0}
+.see b:first-child{display:block;font-size:13px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px}
+.tip{background:var(--blue-soft);border-left:4px solid var(--blue);border-radius:8px;padding:12px 16px;margin:16px 0}
+.warn{background:var(--warn);border-left:4px solid var(--warn-line);border-radius:8px;padding:12px 16px;margin:16px 0}
+.see p,.tip p,.warn p{margin:4px 0}
+.see ul{margin:6px 0 0;padding-left:20px}
+
+table{border-collapse:collapse;width:100%;margin:12px 0;font-size:15px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--off)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+.tablewrap table{margin:0}
+
+.copy{position:relative;background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 92px 14px 14px;margin:12px 0;font-size:15px}
+.copy button{position:absolute;top:10px;right:10px}
+button.btn,a.btn{display:inline-block;background:var(--blue);color:#fff;border:0;border-radius:8px;padding:8px 14px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none}
+button.btn.s{background:var(--card);color:var(--blue);border:1px solid var(--blue);padding:5px 10px;font-size:13px}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}
+
+details{border:1px solid var(--line);border-radius:10px;background:var(--card);margin:10px 0;padding:0 16px}
+summary{cursor:pointer;padding:12px 0;font-weight:600}
+details[open] summary{border-bottom:1px solid var(--line);margin-bottom:10px}
+details p,details ul{margin:8px 0 14px}
+footer{padding:30px 0 50px;color:var(--muted);font-size:14px;border-top:1px solid var(--line);margin-top:40px}
+@media(max-width:520px){.bar b{display:none}.bar .grow{display:none}.prog{max-width:none}}
+@media print{.bar{display:none}.step{break-inside:avoid}}
+</style>
+</head>
+<body>
+
+<div class="bar" role="banner">
+  <div class="wrap">
+    <b>The Last Mile</b>
+    <div class="grow"></div>
+    <div class="prog" aria-hidden="true"><i id="progfill"></i></div>
+    <small id="progtext">0 of 0 done</small>
+    <button id="theme" type="button" aria-label="Switch light or dark theme">Theme</button>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>The Last Mile: Mapping NYC's Delivery Pressure Points</h1>
+    <p>A step by step guide for the SDSC 2026 New York workshop. You will go from three open datasets to a scored map with an AI agent, using CARTO Workflows and Builder.</p>
+    <div class="chips">
+      <span class="chip g">About 60 minutes</span>
+      <span class="chip">Intro level</span>
+      <span class="chip">No install</span>
+      <span class="chip">Free trial is enough</span>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="overview">
+  <h2>What you will build</h2>
+  <p class="lead">A score from 0 to 100 for 10 NYPD precincts in Manhattan below 60th Street. A high score means delivery trucks collect many parking tickets while legal loading zones are scarce.</p>
+  <div class="grid">
+    <div class="card"><h3>1. Workflow</h3><p>Load three datasets, count tickets and loading zones per precinct, rate each precinct per 1,000 residents.</p></div>
+    <div class="card"><h3>2. Map</h3><p>Open the Builder map the workflow creates and style it so the pressure points stand out.</p></div>
+    <div class="card"><h3>3. AI agent</h3><p>Add an agent to the map and ask questions about the precincts in plain English.</p></div>
+  </div>
+  <ul class="toc">
+    <li><a href="#requirements">Requirements</a></li>
+    <li><a href="#s0">0 Setup</a></li>
+    <li><a href="#s1">1 Import</a></li>
+    <li><a href="#s2">2 Run</a></li>
+    <li><a href="#s3">3 Finish</a></li>
+    <li><a href="#s4">4 Experiments</a></li>
+    <li><a href="#s5">5 Style the map</a></li>
+    <li><a href="#s6">6 AI agent</a></li>
+    <li><a href="#stuck">If you get stuck</a></li>
+    <li><a href="#resources">Resources</a></li>
+  </ul>
+</section>
+
+<section id="requirements">
+  <h2>Requirements</h2>
+  <p class="lead">Everything runs in the browser, inside the CARTO Data Warehouse that comes with every account. Nothing to install, no connections to configure.</p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>You need</th><th>Details</th></tr></thead>
+      <tbody>
+        <tr><td><b>A CARTO account</b></td><td>Free trial at <a href="https://app.carto.com" target="_blank" rel="noopener">app.carto.com</a>. The help desk can set one up if you do not have it.</td></tr>
+        <tr><td><b>CARTO AI turned on</b></td><td>An admin of your org (in a new trial, that is you) must switch it on. Needed for the agent in step 6. See step 0.</td></tr>
+        <tr><td><b>The workflow files</b></td><td>Two <code>.sql</code> files from the <a href="https://github.com/juliagreig/sdsc26-last-mile-workshop/tree/main/workflow" target="_blank" rel="noopener">workflow folder</a> of this repo. Step 0 shows how to get them.</td></tr>
+        <tr><td><b>A modern browser</b></td><td>Chrome, Edge, Firefox or Safari, and an internet connection.</td></tr>
+        <tr><td><b>About 60 minutes</b></td><td>The first workflow run takes about 2 minutes. You do not need any SQL or coding knowledge.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="tip"><p><b>Tip.</b> Your progress is saved in this browser. Tick the boxes as you go and the bar at the top shows how far you are.</p></div>
+</section>
+
+<!-- STEP 0 -->
+<article class="step" id="s0">
+  <header><div class="num">0</div><h2>Set up your account</h2><span class="t">5 min</span></header>
+  <div class="body">
+    <ol class="todo">
+      <li><input type="checkbox" id="c0a"><label for="c0a">Log in to <a href="https://app.carto.com" target="_blank" rel="noopener">app.carto.com</a> and check that <b>Workflows</b> and <b>Maps</b> appear in the left menu.</label></li>
+      <li><input type="checkbox" id="c0b"><label for="c0b">Go to <b>Settings</b>, then <b>CARTO AI</b>, then <b>Configuration</b>. Switch on <b>Enable CARTO AI</b>. Also check that <b>AI Agents in Builder maps</b> is on.</label></li>
+      <li><input type="checkbox" id="c0c"><label for="c0c">Download the two workflow files (buttons below).</label></li>
+    </ol>
+    <figure>
+      <img src="img/01-enable-carto-ai.png" alt="CARTO AI configuration page showing the Enable CARTO AI switch and the AI Agents in Builder maps switch" loading="lazy">
+      <figcaption>Settings, CARTO AI, Configuration. Both switches must be on.</figcaption>
+    </figure>
+    <div class="btns">
+      <a class="btn" href="https://raw.githubusercontent.com/juliagreig/sdsc26-last-mile-workshop/main/workflow/1_last_mile_START_HERE.sql" download="1_last_mile_START_HERE.sql">1_last_mile_START_HERE.sql</a>
+      <a class="btn" href="https://raw.githubusercontent.com/juliagreig/sdsc26-last-mile-workshop/main/workflow/2_last_mile_COMPLETE.sql" download="2_last_mile_COMPLETE.sql">2_last_mile_COMPLETE.sql</a>
+    </div>
+    <div class="warn"><p>If clicking a button shows the file as text in your browser instead of saving it, right click the button, choose <b>Save link as</b> and keep the <code>.sql</code> ending. Or open the file on GitHub and use the download button there.</p></div>
+    <div class="see"><b>You should see</b>Two files named <code>1_last_mile_START_HERE.sql</code> and <code>2_last_mile_COMPLETE.sql</code> in your Downloads folder. Use START_HERE for the workshop. COMPLETE is your safety net.</div>
+  </div>
+</article>
+
+<!-- STEP 1 -->
+<article class="step" id="s1">
+  <header><div class="num">1</div><h2>Import the starter workflow</h2><span class="t">3 min</span></header>
+  <div class="body">
+    <p>A workflow is a visual canvas where each box is one step of an analysis. The starter file already contains the first half of the analysis.</p>
+    <ol class="todo">
+      <li><input type="checkbox" id="c1a"><label for="c1a">In CARTO open <b>Workflows</b> from the left menu.</label></li>
+      <li><input type="checkbox" id="c1b"><label for="c1b">Click the <b>import</b> icon next to <b>+ New workflow</b>, or drag <code>1_last_mile_START_HERE.sql</code> onto the page.</label></li>
+      <li><input type="checkbox" id="c1c"><label for="c1c">Choose the <b>CARTO Data Warehouse</b> connection and click <b>Create workflow</b>.</label></li>
+    </ol>
+    <figure>
+      <img src="img/02-workflows-header.png" alt="The Workflows page header with the import icon next to the New workflow button" loading="lazy">
+      <figcaption>The import icon sits next to the New workflow button.</figcaption>
+    </figure>
+    <figure>
+      <img src="img/03-import-dialog.png" alt="Import workflow dialog with the CARTO Data Warehouse connection selected" style="max-width:520px" loading="lazy">
+      <figcaption>Pick CARTO Data Warehouse and press Create workflow.</figcaption>
+    </figure>
+    <div class="see"><b>You should see</b>A canvas with four colored panels: <b>1 Load</b> (yellow), <b>2 Measure</b> (blue), <b>3 Combine and rate</b> (green) and an empty purple panel called <b>Your turn</b>.</div>
+    <figure>
+      <img src="img/04-start-canvas.png" alt="The starter workflow canvas with yellow, blue and green stage panels and a purple Your turn panel" loading="lazy">
+      <figcaption>The starter workflow. The purple panel is where you add three nodes in step 3.</figcaption>
+    </figure>
+    <div class="tip"><p>The imported workflow is named after the file, so it will be called <code>1_last_mile_START_HERE</code>.</p></div>
+  </div>
+</article>
+
+<!-- STEP 2 -->
+<article class="step" id="s2">
+  <header><div class="num">2</div><h2>Run it and read the canvas</h2><span class="t">3 min</span></header>
+  <div class="body">
+    <ol class="todo">
+      <li><input type="checkbox" id="c2a"><label for="c2a">Click the green <b>Run</b> button at the top right of the canvas.</label></li>
+      <li><input type="checkbox" id="c2b"><label for="c2b">While it runs (about 2 minutes), read the colored panels. Each one explains what its stage does.</label></li>
+      <li><input type="checkbox" id="c2c"><label for="c2c">Open the <b>Messages</b> tab at the bottom and wait for <b>Workflow execution completed successfully</b>.</label></li>
+    </ol>
+    <table>
+      <thead><tr><th>Stage</th><th>What happens</th></tr></thead>
+      <tbody>
+        <tr><td><b>1 Load</b></td><td>Three open datasets are imported: parking tickets for commercial vehicles, precinct boundaries, and loading zone signs. A small table adds how many people live in each precinct.</td></tr>
+        <tr><td><b>2 Measure</b></td><td>Count tickets per precinct (demand) and legal loading zones per precinct (supply). Filters keep only the 10 study precincts and the dates in the Variables.</td></tr>
+        <tr><td><b>3 Combine and rate</b></td><td>Everything goes into one table with one row per precinct, then tickets and loading zones are divided by population, per 1,000 residents.</td></tr>
+      </tbody>
+    </table>
+    <figure>
+      <img src="img/05-run-complete.png" alt="Messages panel showing Workflow execution completed successfully" loading="lazy">
+      <figcaption>The Messages tab confirms the run finished.</figcaption>
+    </figure>
+    <div class="see"><b>You should see</b>Green check marks on the nodes and a success message. A first run takes about 2 minutes. If it takes longer than 5 minutes, see <a href="#stuck">If you get stuck</a>.</div>
+    <div class="warn"><p><b>Do not press Stop and Run again while it is working.</b> Stacked runs only make it slower.</p></div>
+  </div>
+</article>
+
+<!-- STEP 3 -->
+<article class="step" id="s3">
+  <header><div class="num">3</div><h2>Finish the workflow: three nodes</h2><span class="t">10 min</span></header>
+  <div class="body">
+    <p>Now you add the last three nodes, inside the purple <b>Your turn</b> panel. To add a node, open the <b>Components</b> tab on the left, search for it by name, drag it onto the canvas, and connect its input to the output of the previous node. Double click a node title to rename it.</p>
+    <div class="tip"><p><b>Predict first.</b> Which precinct do you think will rank number one for delivery pressure? Write it down before you run.</p></div>
+
+    <h3>Node 1: Composite Score Unsupervised, called <code>3. Priority index</code></h3>
+    <p>This node turns several measurements into one 0 to 100 score. Search the Components tab for <code>composite score</code> and connect it after <code>3. Supply per 1k</code>.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Setting</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Input</td><td>output of <code>3. Supply per 1k</code></td></tr>
+        <tr><td>Scoring method</td><td><code>CUSTOM_WEIGHTS</code></td></tr>
+        <tr><td>Weights</td><td><code>demand_per_1k</code> = 1, left on <b>Direct</b><br><code>loading_per_1k</code> = 1, switched to <b>Inverse</b> (click the arrow next to it)<br><code>population</code>, <code>violations</code> and <code>loading_supply</code> = <b>0</b></td></tr>
+        <tr><td>Scaling function</td><td><code>MIN_MAX_SCALER</code></td></tr>
+        <tr><td>Aggregation function</td><td><code>LINEAR</code></td></tr>
+        <tr><td>Output formatting</td><td><code>RETURN_RANGE</code>, from <code>0</code> to <code>100</code></td></tr>
+      </tbody>
+    </table></div>
+    <div class="pair narrow">
+      <figure><img src="img/06-score-settings-top.png" alt="Composite Score settings, scoring method and weights list" loading="lazy"><figcaption>Scoring method and weights. Yours will show weight 1 on every column until you change them.</figcaption></figure>
+      <figure><img src="img/07-score-settings-bottom.png" alt="Composite Score settings, scaling, aggregation and output formatting" loading="lazy"><figcaption>Scaling, aggregation and return range.</figcaption></figure>
+    </div>
+    <p><b>Why Inverse?</b> More loading zones per resident means less pressure, so that variable has to push the score down. Direct means a higher value raises the score. Inverse means a higher value lowers it.</p>
+    <div class="warn"><p>The column list only appears after the previous nodes have run, which is why you ran the workflow first. If you forget to zero the other three columns, the ranking changes.</p></div>
+    <ol class="todo">
+      <li><input type="checkbox" id="c3a"><label for="c3a">Add <b>Composite Score Unsupervised</b>, connect it, rename it <code>3. Priority index</code>.</label></li>
+      <li><input type="checkbox" id="c3b"><label for="c3b">Set the weights and options from the table above.</label></li>
+    </ol>
+
+    <h3>Node 2: Join, called <code>3. Attach index</code></h3>
+    <p>The score table has no shapes. This node adds the score back onto the precinct polygons.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Setting</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Left table</td><td>output of <code>3. Supply per 1k</code></td></tr>
+        <tr><td>Right table</td><td>output of <code>3. Priority index</code></td></tr>
+        <tr><td>Key column in both tables</td><td><code>precinct</code></td></tr>
+        <tr><td>Join type</td><td><code>Left</code></td></tr>
+        <tr><td>Left columns to keep</td><td><code>precinct</code>, <code>geom</code>, <code>population</code>, <code>violations</code>, <code>loading_supply</code>, <code>demand_per_1k</code>, <code>loading_per_1k</code></td></tr>
+        <tr><td>Right columns to keep</td><td><code>spatial_score</code>, renamed to <code>priority_index</code></td></tr>
+      </tbody>
+    </table></div>
+    <figure>
+      <img src="img/08-join-settings.png" alt="Join node settings with the right table column spatial_score renamed to priority_index" style="max-width:300px" loading="lazy">
+      <figcaption>The Join settings. Note the rename of spatial_score to priority_index.</figcaption>
+    </figure>
+    <ol class="todo">
+      <li><input type="checkbox" id="c3c"><label for="c3c">Add <b>Join</b>, connect both inputs, rename it <code>3. Attach index</code>.</label></li>
+      <li><input type="checkbox" id="c3d"><label for="c3d">Fill in the settings from the table above.</label></li>
+    </ol>
+
+    <h3>Node 3: Create Builder Map, called <code>4. Create map</code></h3>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Setting</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Sources</td><td>connect two nodes: <code>3. Attach index</code> (precincts with the score) and <code>1. Convert coordinates</code> (the loading zone points)</td></tr>
+        <tr><td>Map name</td><td><code>The Last Mile: NYC Delivery Pressure</code></td></tr>
+        <tr><td>Re-running mode</td><td><code>Update</code></td></tr>
+      </tbody>
+    </table></div>
+    <figure>
+      <img src="img/10-create-map-settings.png" alt="Create Builder Map settings with map name and Update re-running mode" style="max-width:300px" loading="lazy">
+      <figcaption>Create Builder Map. Update keeps your styles when you run again.</figcaption>
+    </figure>
+    <ol class="todo">
+      <li><input type="checkbox" id="c3e"><label for="c3e">Add <b>Create Builder Map</b>, connect the two sources, rename it <code>4. Create map</code>.</label></li>
+      <li><input type="checkbox" id="c3f"><label for="c3f">Click <b>Run</b> and wait for the success message.</label></li>
+    </ol>
+
+    <h3>Check your result</h3>
+    <p>Select <code>3. Attach index</code> and open the <b>Data</b> tab at the bottom.</p>
+    <figure>
+      <img src="img/09-join-results.png" alt="Data tab showing the joined table with 10 rows" loading="lazy">
+      <figcaption>Ten rows, one per precinct, with the shapes and the new priority_index column.</figcaption>
+    </figure>
+    <div class="see"><b>You should see</b>
+      <p>10 rows. Sorted by <code>priority_index</code>, the ranking should be:</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Precinct</th><th>13</th><th>14</th><th>7</th><th>9</th><th>6</th><th>10</th><th>18</th><th>17</th><th>1</th><th>5</th></tr></thead>
+        <tbody><tr><td>priority_index</td><td>100</td><td>87.8</td><td>87.8</td><td>85.9</td><td>85.1</td><td>67.7</td><td>47.0</td><td>45.9</td><td>18.5</td><td>0</td></tr></tbody>
+      </table></div>
+    </div>
+    <p>If your numbers differ, check that <code>precinct</code> is the key column and that <code>loading_per_1k</code> is set to <b>Inverse</b>.</p>
+    <figure>
+      <img src="img/11-complete-canvas.png" alt="The complete workflow canvas with all five stage panels" loading="lazy">
+      <figcaption>The finished workflow, as in COMPLETE.sql.</figcaption>
+    </figure>
+  </div>
+</article>
+
+<!-- STEP 4 -->
+<article class="step" id="s4">
+  <header><div class="num">4</div><h2>Try two experiments</h2><span class="t">5 min</span></header>
+  <div class="body">
+    <p>This is where a workflow pays off: change one setting, run again, and the whole chain updates.</p>
+    <ol class="todo">
+      <li><input type="checkbox" id="c4a"><label for="c4a"><b>Change the time window.</b> Open <b>Variables</b>, set <code>date_from</code> to <code>2026-01-01</code> and run. Does the ranking change?</label></li>
+      <li><input type="checkbox" id="c4b"><label for="c4b"><b>Change the weights.</b> Put <code>date_from</code> back to its original value. Select <code>3. Priority index</code>, give <code>demand_per_1k</code> a weight of <code>2</code> and run. Which precincts move?</label></li>
+    </ol>
+    <div class="tip"><p>Short on time? Skip this step and come back to it after the workshop. The map in step 5 works with either result.</p></div>
+  </div>
+</article>
+
+<!-- STEP 5 -->
+<article class="step" id="s5">
+  <header><div class="num">5</div><h2>Style the map</h2><span class="t">10 min</span></header>
+  <div class="body">
+    <ol class="todo">
+      <li><input type="checkbox" id="c5a"><label for="c5a">Open the map: click the link in the results of the <code>4. Create map</code> node (Data tab), or find it in <b>Maps</b>.</label></li>
+      <li><input type="checkbox" id="c5b"><label for="c5b"><b>Precincts layer.</b> Click <b>Layer 1</b>. In <b>Fill</b>, open the <b>Color</b> dropdown and pick the column <code>priority_index</code>. Choose a yellow to red palette and set opacity to about 70%.</label></li>
+      <li><input type="checkbox" id="c5c"><label for="c5c"><b>Loading zones layer.</b> Click <b>Layer 2</b>. Keep it as small points (radius about 3 px) and pick a bright fill color so they stand out on the dark basemap.</label></li>
+      <li><input type="checkbox" id="c5d"><label for="c5d"><b>Widget.</b> Open the <b>Widgets</b> tab (second icon in the left bar) and add a <b>Histogram</b> on <code>priority_index</code>. Click a bar to filter the map to those precincts.</label></li>
+      <li><input type="checkbox" id="c5e"><label for="c5e"><b>Basemap.</b> Optional: switch to a dark basemap with the basemap button at the bottom left of the map, so the colors pop.</label></li>
+    </ol>
+    <p>Before and after:</p>
+    <figure>
+      <img src="img/12-map-default.png" alt="The default map the workflow creates, with one teal fill for all precincts" loading="lazy">
+      <figcaption>The map straight from the workflow: every precinct has the same color.</figcaption>
+    </figure>
+    <div class="pair narrow">
+      <figure><img src="img/13-layer-default.png" alt="Layer settings with a simple fill color" loading="lazy"><figcaption>Before: Color is Simple.</figcaption></figure>
+      <figure><img src="img/14-layer-fill-by-priority.png" alt="Layer settings with fill color by priority_index and a yellow to red palette" loading="lazy"><figcaption>After: Color is by priority_index, yellow to red.</figcaption></figure>
+    </div>
+    <figure>
+      <img src="img/15-map-styled.png" alt="Styled map with precincts colored from yellow to red and loading zones as teal points" loading="lazy">
+      <figcaption>The styled map. Red precincts have the highest delivery pressure.</figcaption>
+    </figure>
+    <div class="see"><b>You should see</b><ul><li>Precincts shaded from light yellow (low pressure) to red (high pressure).</li><li>Loading zones as small bright points, clustered where legal curb space exists.</li><li>A histogram that filters the map when you click a bar.</li></ul></div>
+  </div>
+</article>
+
+<!-- STEP 6 -->
+<article class="step" id="s6">
+  <header><div class="num">6</div><h2>Add an AI agent</h2><span class="t">10 min</span></header>
+  <div class="body">
+    <p>An AI agent lives inside the map. It can read your widgets and layers, answer questions, and filter the map for you. This needs CARTO AI to be enabled (step 0).</p>
+    <ol class="todo">
+      <li><input type="checkbox" id="c6a"><label for="c6a">In the map editor click the <b>AI Agent</b> icon at the bottom of the left bar, then the pencil icon to configure it.</label></li>
+      <li><input type="checkbox" id="c6b"><label for="c6b">In the <b>Assistant</b> tab paste the prompt below.</label></li>
+      <li><input type="checkbox" id="c6c"><label for="c6c">Optional: under <b>Capabilities</b> switch on <b>Query sources for insights</b> so the agent can run SQL on your data. This works on private maps, not on maps shared publicly.</label></li>
+      <li><input type="checkbox" id="c6d"><label for="c6d">Click <b>Test in Preview</b> and ask the starter questions.</label></li>
+    </ol>
+    <p><b>Assistant prompt</b></p>
+    <div class="copy" id="p1">I am building an assistant for urban planners and logistics teams who explore last-mile delivery pressure in Manhattan below 60th Street. The map has one row per NYPD precinct with priority_index (0 to 100, higher means more pressure), violations, loading_supply, demand_per_1k and loading_per_1k. It should answer which precincts have the highest pressure, compare supply and demand, and use the map's widgets and filters to show its answers.<button type="button" class="btn s" data-copy="p1">Copy</button></div>
+    <p><b>Starter questions</b> (add them in the agent configuration, or just type them)</p>
+    <div class="copy" id="q1">Which precincts have the highest delivery pressure?<button type="button" class="btn s" data-copy="q1">Copy</button></div>
+    <div class="copy" id="q2">Show me high-pressure precincts with few loading zones<button type="button" class="btn s" data-copy="q2">Copy</button></div>
+    <div class="copy" id="q3">What is driving the score in precinct 14?<button type="button" class="btn s" data-copy="q3">Copy</button></div>
+    <div class="copy" id="q4">How are tickets spread across violation types?<button type="button" class="btn s" data-copy="q4">Copy</button></div>
+    <figure>
+      <img src="img/16-agent-panel.png" alt="The AI Agent panel with use case, MCP tools and capabilities" style="max-width:300px" loading="lazy">
+      <figcaption>The AI Agent panel in the map editor.</figcaption>
+    </figure>
+    <figure>
+      <img src="img/17-agent-preview.png" alt="Agent chat in preview mode with four starter question chips" loading="lazy">
+      <figcaption>Test in Preview opens the chat with your starter questions.</figcaption>
+    </figure>
+    <figure>
+      <img src="img/18-agent-answer.png" alt="The agent answering with a ranked table of precincts and the map filtered to the top five" loading="lazy">
+      <figcaption>The agent ranks the precincts and filters the map to the top five.</figcaption>
+    </figure>
+    <div class="see"><b>You should see</b>A table with precinct 13 first, then 14, 7, 9 and 6, and the map filtered to those precincts. Your decimals may differ slightly from the screenshot. Answers take 30 to 70 seconds because the agent makes several tool calls.</div>
+    <div class="warn"><p><b>If the agent says a widget timed out,</b> open the widgets panel on the right side of the map (the <b>Show widgets</b> button) and ask again. Widgets only return data while they are visible.</p></div>
+    <p>Pressed <b>Clear all</b> and the map still shows only some precincts? Refresh the page. It is a display quirk, nothing is lost.</p>
+  </div>
+</article>
+
+<section id="stuck">
+  <h2>If you get stuck</h2>
+  <details open>
+    <summary>I am behind or something is broken. How do I catch up?</summary>
+    <p>Import <code>2_last_mile_COMPLETE.sql</code> the same way as in step 1. It already contains all the nodes. Run it and carry on from step 5.</p>
+  </details>
+  <details>
+    <summary>The run takes more than 5 minutes or seems frozen</summary>
+    <p>The data is downloaded from GitHub the first time, which usually takes 1 to 2 minutes. If nothing moves after 5 minutes, check your internet connection, wait for the run to end or fail, then run once more. Avoid pressing Run repeatedly.</p>
+  </details>
+  <details>
+    <summary>The Composite Score weights list is empty</summary>
+    <p>The columns are only listed after the upstream nodes have run. Run the workflow once, then open the node again.</p>
+  </details>
+  <details>
+    <summary>My ranking is different from the table</summary>
+    <p>Check that: <code>precinct</code> is the key column in the Join, <code>loading_per_1k</code> is on <b>Inverse</b>, <code>population</code>, <code>violations</code> and <code>loading_supply</code> have weight <code>0</code>, and the Variables <code>date_from</code> and <code>date_to</code> are back to their original values.</p>
+  </details>
+  <details>
+    <summary>The map shows a source error</summary>
+    <p>While a workflow runs, its tables are rebuilt and the map cannot read them. It recovers when the run finishes, and your styles and widgets are kept.</p>
+  </details>
+  <details>
+    <summary>I cannot see the AI Agent icon, or the agent will not answer</summary>
+    <p>Go back to step 0 and make sure <b>Enable CARTO AI</b> and <b>AI Agents in Builder maps</b> are on in <b>Settings, CARTO AI, Configuration</b>. Only an org admin can change this. If the agent answers with a model access error, choose another model in the agent configuration.</p>
+  </details>
+  <details>
+    <summary>The import fails or I do not see CARTO Data Warehouse</summary>
+    <p>Make sure you selected the <b>CARTO Data Warehouse</b> connection in the import dialog. If your org has no connections listed, ask the help desk to check your account.</p>
+  </details>
+</section>
+
+<section id="resources">
+  <h2>Resources and next steps</h2>
+  <div class="grid">
+    <div class="card"><h3>This repository</h3><p><a href="https://github.com/juliagreig/sdsc26-last-mile-workshop" target="_blank" rel="noopener">Files, data and cheat sheets</a></p></div>
+    <div class="card"><h3>CARTO Workflows docs</h3><p><a href="https://docs.carto.com/carto-user-manual/workflows" target="_blank" rel="noopener">docs.carto.com</a></p></div>
+    <div class="card"><h3>CARTO Academy</h3><p><a href="https://academy.carto.com" target="_blank" rel="noopener">Tutorials and use cases</a></p></div>
+    <div class="card"><h3>CARTO blog</h3><p><a href="https://carto.com/blog" target="_blank" rel="noopener">carto.com/blog</a></p></div>
+    <div class="card"><h3>Say hello</h3><p>Julia González Reig on <a href="https://www.linkedin.com/in/juliagonzalezreig/" target="_blank" rel="noopener">LinkedIn</a></p></div>
+  </div>
+  <h3>Ideas to explore on your own</h3>
+  <ul>
+    <li>Add the NYC DOT microhub pilot sites as a layer (most are north of 60th Street, outside this study area).</li>
+    <li>Enrich the precincts with more Census data from the CARTO Data Observatory.</li>
+    <li>Swap the NYC datasets for your own city's open data.</li>
+    <li>Change the weights to represent a different priority, such as equity or congestion.</li>
+  </ul>
+</section>
+
+<footer>
+  <p>Data: NYC Open Data (parking violations, loading zone signs, precinct boundaries) and Census population. See the <a href="https://github.com/juliagreig/sdsc26-last-mile-workshop/blob/main/data/README.md" target="_blank" rel="noopener">data notes</a> for fields and credits. The ticket data covers one fixed fiscal year (July 2025 to June 2026), so everyone gets the same results. Tables created by workflows are temporary and expire after 30 days.</p>
+</footer>
+</main>
+
+<script>
+(function(){
+  var KEY='sdsc26-last-mile-guide';
+  var state={};
+  function load(){try{state=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){state={};}}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  load();
+  var boxes=[].slice.call(document.querySelectorAll('ol.todo input[type=checkbox]'));
+  var fill=document.getElementById('progfill'), txt=document.getElementById('progtext');
+  function refresh(){
+    var done=0;
+    boxes.forEach(function(b){
+      b.closest('li').classList.toggle('on',b.checked);
+      if(b.checked)done++;
+    });
+    document.querySelectorAll('.step').forEach(function(s){
+      var bs=s.querySelectorAll('input[type=checkbox]');
+      var all=bs.length>0&&[].every.call(bs,function(b){return b.checked;});
+      s.classList.toggle('done',all);
+    });
+    fill.style.width=(boxes.length?Math.round(done/boxes.length*100):0)+'%';
+    txt.textContent=done+' of '+boxes.length+' done';
+  }
+  boxes.forEach(function(b){
+    if(state[b.id])b.checked=true;
+    b.addEventListener('change',function(){state[b.id]=b.checked;save();refresh();});
+  });
+  refresh();
+
+  document.querySelectorAll('button[data-copy]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var el=document.getElementById(btn.getAttribute('data-copy'));
+      var text=[].filter.call(el.childNodes,function(n){return n.nodeType===3;}).map(function(n){return n.textContent;}).join('').trim();
+      function ok(){var o=btn.textContent;btn.textContent='Copied';setTimeout(function(){btn.textContent=o;},1400);}
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(ok,function(){fallback(text,ok);});}
+      else fallback(text,ok);
+    });
+  });
+  function fallback(text,ok){
+    var t=document.createElement('textarea');t.value=text;document.body.appendChild(t);t.select();
+    try{document.execCommand('copy');ok();}catch(e){}
+    document.body.removeChild(t);
+  }
+
+  var root=document.documentElement;
+  try{var th=localStorage.getItem(KEY+'-theme');if(th)root.setAttribute('data-theme',th);}catch(e){}
+  document.getElementById('theme').addEventListener('click',function(){
+    var dark=root.getAttribute('data-theme')==='dark'||(!root.getAttribute('data-theme')&&window.matchMedia('(prefers-color-scheme: dark)').matches);
+    var next=dark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{localStorage.setItem(KEY+'-theme',next);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>
