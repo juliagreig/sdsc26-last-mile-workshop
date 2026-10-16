@@ -1,6 +1,6 @@
 # Cheat sheet: finish the workflow
 
-You start from `1_last_mile_START_HERE.sql`. The last node on the canvas is `3. Supply per 1k`. Add these three nodes after it. To add a node, drag it from the **Components** tab onto the canvas (or search for it), then drag a connection from the output of the previous node to its input.
+You start from `1_last_mile_START_HERE.sql`. The last node on the canvas is `3. Supply per 1k`. Add these three nodes after it, inside the purple **Your turn** panel. To add a node, drag it from the **Components** tab onto the canvas (or search for it), then drag a connection from the output of the previous node to its input.
 
 Run the whole workflow once before you start, so the earlier steps are already calculated.
 

@@ -29,11 +29,11 @@ You need a CARTO account. If you do not have one, sign up for a free trial at [a
 
 ### 2. Run it (about 2 to 3 minutes)
 
-Click **Run**. The workflow downloads the three datasets from this repo, counts parking tickets and loading zones in each precinct and calculates tickets and loading zones per 1,000 residents. While it runs, look at the stages on the canvas: the node titles start with 1 (load), 2 (measure) and 3 (per resident).
+Click **Run**. The workflow downloads the three datasets from this repo, counts parking tickets and loading zones in each precinct and calculates tickets and loading zones per 1,000 residents. While it runs, read the colored panels on the canvas: each one explains what a stage of the analysis does (1 Load, 2 Measure, 3 Combine and rate).
 
 ### 3. Finish the workflow together (about 10 minutes)
 
-Add three nodes at the end of the workflow. Follow along on screen or use the [cheat sheet](guide/cheat_sheet_finish_the_workflow.md):
+Add three nodes in the purple **Your turn** panel at the end of the workflow. Follow along on screen or use the [cheat sheet](guide/cheat_sheet_finish_the_workflow.md):
 
 1. **Composite Score Unsupervised** called `3. Priority index`: combines demand and supply into one 0 to 100 score.
 2. **Join** called `3. Attach index`: adds the score back to the precinct shapes.

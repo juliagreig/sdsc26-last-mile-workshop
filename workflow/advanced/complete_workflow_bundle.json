@@ -12,7 +12,7 @@
     "type": "generic",
     "position": {
      "x": 80,
-     "y": 80
+     "y": 280
     },
     "data": {
      "name": "native.importurl",
@@ -40,7 +40,7 @@
     "type": "generic",
     "position": {
      "x": 80,
-     "y": 240
+     "y": 440
     },
     "data": {
      "name": "native.importurl",
@@ -68,7 +68,7 @@
     "type": "generic",
     "position": {
      "x": 80,
-     "y": 560
+     "y": 760
     },
     "data": {
      "name": "native.importurl",
@@ -96,7 +96,7 @@
     "type": "generic",
     "position": {
      "x": 80,
-     "y": 400
+     "y": 600
     },
     "data": {
      "name": "native.customsql",
@@ -136,7 +136,7 @@
     "type": "generic",
     "position": {
      "x": 272,
-     "y": 560
+     "y": 760
     },
     "data": {
      "name": "native.customsql",
@@ -175,8 +175,8 @@
     "id": "n-precinct-filter",
     "type": "generic",
     "position": {
-     "x": 272,
-     "y": 240
+     "x": 464,
+     "y": 440
     },
     "data": {
      "name": "native.where",
@@ -203,8 +203,8 @@
     "id": "n-violation-filter",
     "type": "generic",
     "position": {
-     "x": 272,
-     "y": 80
+     "x": 464,
+     "y": 280
     },
     "data": {
      "name": "native.where",
@@ -231,8 +231,8 @@
     "id": "n-violation-groupby",
     "type": "generic",
     "position": {
-     "x": 464,
-     "y": 80
+     "x": 656,
+     "y": 280
     },
     "data": {
      "name": "native.groupby",
@@ -265,8 +265,8 @@
     "id": "n-violation-cast",
     "type": "generic",
     "position": {
-     "x": 656,
-     "y": 80
+     "x": 848,
+     "y": 280
     },
     "data": {
      "name": "native.cast",
@@ -300,7 +300,7 @@
     "type": "generic",
     "position": {
      "x": 464,
-     "y": 560
+     "y": 760
     },
     "data": {
      "name": "native.spatialjoin",
@@ -364,7 +364,7 @@
     "type": "generic",
     "position": {
      "x": 656,
-     "y": 560
+     "y": 760
     },
     "data": {
      "name": "native.groupby",
@@ -397,8 +397,8 @@
     "id": "n-join-pop",
     "type": "generic",
     "position": {
-     "x": 464,
-     "y": 240
+     "x": 1088,
+     "y": 440
     },
     "data": {
      "name": "native.joinv2",
@@ -455,8 +455,8 @@
     "id": "n-join-violations",
     "type": "generic",
     "position": {
-     "x": 848,
-     "y": 240
+     "x": 1280,
+     "y": 440
     },
     "data": {
      "name": "native.joinv2",
@@ -513,8 +513,8 @@
     "id": "n-join-supply",
     "type": "generic",
     "position": {
-     "x": 1040,
-     "y": 240
+     "x": 1472,
+     "y": 440
     },
     "data": {
      "name": "native.joinv2",
@@ -571,8 +571,8 @@
     "id": "n-create-demand",
     "type": "generic",
     "position": {
-     "x": 1232,
-     "y": 240
+     "x": 1664,
+     "y": 440
     },
     "data": {
      "name": "native.selectexpression",
@@ -605,8 +605,8 @@
     "id": "n-create-supply-ratio",
     "type": "generic",
     "position": {
-     "x": 1424,
-     "y": 240
+     "x": 1856,
+     "y": 440
     },
     "data": {
      "name": "native.selectexpression",
@@ -639,8 +639,8 @@
     "id": "n-composite-score",
     "type": "generic",
     "position": {
-     "x": 1616,
-     "y": 240
+     "x": 2048,
+     "y": 440
     },
     "data": {
      "name": "native.spatialcompositeunsupervised",
@@ -727,8 +727,8 @@
     "id": "n-join-score",
     "type": "generic",
     "position": {
-     "x": 1808,
-     "y": 240
+     "x": 2240,
+     "y": 440
     },
     "data": {
      "name": "native.joinv2",
@@ -785,8 +785,8 @@
     "id": "n-create-map",
     "type": "generic",
     "position": {
-     "x": 2000,
-     "y": 240
+     "x": 2432,
+     "y": 440
     },
     "data": {
      "name": "native.createbuildermap",
@@ -813,6 +813,101 @@
        "value": "update"
       }
      ]
+    }
+   },
+   {
+    "id": "9b6c4442-44a3-5d5e-97cd-af14c89d57fe",
+    "type": "note",
+    "zIndex": -1,
+    "position": {
+     "x": 40,
+     "y": 40
+    },
+    "data": {
+     "name": "Note",
+     "color": "#F6CF71",
+     "genAi": false,
+     "label": "",
+     "width": 360,
+     "height": 840,
+     "inputs": [],
+     "markdown": "---\nlabel:\n---\n## 1 \u00b7 Load\nWe bring in three open datasets: parking tickets for commercial vehicles, precinct boundaries and loading zone signs. A small table adds how many people live in each precinct. Sign locations are converted into map coordinates."
+    }
+   },
+   {
+    "id": "9444fa42-1eef-5fc5-9f89-0bbe9cbd22dc",
+    "type": "note",
+    "zIndex": -1,
+    "position": {
+     "x": 420,
+     "y": 40
+    },
+    "data": {
+     "name": "Note",
+     "color": "#9EB9F3",
+     "genAi": false,
+     "label": "",
+     "width": 540,
+     "height": 840,
+     "inputs": [],
+     "markdown": "---\nlabel:\n---\n## 2 \u00b7 Measure\nWe count what happens in each precinct: how many tickets were issued (demand) and how many legal loading zones exist (supply). Filters keep only our 10 precincts and the dates we care about. Change date_from and date_to in Variables to move the time window."
+    }
+   },
+   {
+    "id": "a4029d49-ccc9-5354-9db8-2f66ae8619e5",
+    "type": "note",
+    "zIndex": -1,
+    "position": {
+     "x": 1000,
+     "y": 40
+    },
+    "data": {
+     "name": "Note",
+     "color": "#8BE0A4",
+     "genAi": false,
+     "label": "",
+     "width": 960,
+     "height": 840,
+     "inputs": [],
+     "markdown": "---\nlabel:\n---\n## 3 \u00b7 Combine and rate\nEverything goes into one table with one row per precinct. Then we divide by population: tickets per 1,000 residents and loading zones per 1,000 residents. Now small and large precincts can be compared fairly."
+    }
+   },
+   {
+    "id": "26eb2853-6c2f-53e1-9730-1615a937f788",
+    "type": "note",
+    "zIndex": -1,
+    "position": {
+     "x": 2000,
+     "y": 40
+    },
+    "data": {
+     "name": "Note",
+     "color": "#FE88B1",
+     "genAi": false,
+     "label": "",
+     "width": 350,
+     "height": 840,
+     "inputs": [],
+     "markdown": "---\nlabel:\n---\n## 4 \u00b7 Score\nTwo numbers become one. The Priority index scores each precinct from 0 to 100: more tickets and fewer loading zones means more delivery pressure. The score is then attached back to the precinct shapes."
+    }
+   },
+   {
+    "id": "b1f2dbfd-1225-584b-a5e3-3a669fc20b84",
+    "type": "note",
+    "zIndex": -1,
+    "position": {
+     "x": 2390,
+     "y": 40
+    },
+    "data": {
+     "name": "Note",
+     "color": "#F89C74",
+     "genAi": false,
+     "label": "",
+     "width": 320,
+     "height": 840,
+     "inputs": [],
+     "markdown": "---\nlabel:\n---\n## 5 \u00b7 Map\nThe last node builds a Builder map for you: precincts colored by pressure and loading zones as points. Run again after a change and the map updates."
     }
    }
   ],
