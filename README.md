@@ -8,6 +8,8 @@ Hands-on workshop for SDSC 2026 New York. In about an hour you will go from open
 
 You need a CARTO account. If you do not have one, sign up for a free trial at [app.carto.com](https://app.carto.com) (the workshop help desk can also set one up). Log in and check that you can see the **Workflows** and **Maps** sections in the left menu. Everything runs in the **CARTO Data Warehouse** that comes with your account, so there is nothing to install or connect.
 
+**Turn on CARTO AI** (needed for the AI agent step): in your trial org go to **Settings**, then **CARTO AI**, then **Configuration**, and switch on **Enable CARTO AI**. If you do not see the AI tab in a map later, this switch is the reason.
+
 ## What is in this repo
 
 | Path | What it is |
