@@ -33,7 +33,7 @@ The variable list only shows your columns once the previous nodes have run, so r
 
 ## Node 2: Join
 
-Rename it `3. Attach index`.
+Rename it `3. Attach index`. **Press Run and wait for it to finish before you configure this Join**: it can only see the score table's columns once the score node has run. If you configure it too early, the left key turns red with "Type of selected columns must be identical" and the right columns list is empty.
 
 | Setting | Value |
 | --- | --- |
@@ -79,3 +79,7 @@ If your numbers differ, check that both keys are `geoid` and that `loading_per_1
 ## If the score node says UNEXECUTABLE
 
 "No value assigned" and an empty identifier list mean the table has no column called `geoid`. Check that the node is connected to `3. Supply per 1k` and that you imported the latest start file. A run that fails with "Retrying may solve the problem" just needs another click on Run.
+
+## If the Join says "Type of selected columns must be identical"
+
+Usually the score node has not run yet: press Run, wait for it to finish, click an empty spot on the canvas and select the Join again. Otherwise the right key is still on `spatial_score`: change it to `geoid`.

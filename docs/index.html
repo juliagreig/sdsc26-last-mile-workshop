@@ -441,6 +441,7 @@ body[data-track="core"] [data-track-only="challenge"],body[data-track="challenge
 
     <h3>Node <span data-track-only="core">2</span><span data-track-only="challenge">7</span>: Join, called <code>3. Attach index</code></h3>
     <p>The score table has no shapes. This node adds the score back onto the precinct polygons.</p>
+    <div class="warn"><p><b>Run the workflow first.</b> After you finish the score node, press <b>Run</b> and wait for it to complete (about 2 minutes) before you configure this Join. The Join can only see the columns of the score table once the score node has run. If you configure it too early, the left key shows a red "Type of selected columns must be identical" and the right columns list is empty.</p></div>
     <div class="tablewrap"><table>
       <thead><tr><th>Setting</th><th>Value</th></tr></thead>
       <tbody>
@@ -467,7 +468,7 @@ body[data-track="core"] [data-track-only="challenge"],body[data-track="challenge
       </ul>
     </details>
     <ol class="todo">
-      <li><input type="checkbox" id="c3c"><label for="c3c">Add <b>Join</b>, connect both inputs, rename it <code>3. Attach index</code>.</label></li>
+      <li><input type="checkbox" id="c3c"><label for="c3c">Press <b>Run</b> and wait for it to finish, so the score table exists. Then add <b>Join</b>, connect both inputs (left: <code>3. Supply per 1k</code>, right: <code>3. Priority index</code>), rename it <code>3. Attach index</code>.</label></li>
       <li><input type="checkbox" id="c3d"><label for="c3d">Fill in the settings from the table above.</label></li>
     </ol>
 
@@ -598,8 +599,8 @@ body[data-track="core"] [data-track-only="challenge"],body[data-track="challenge
     <p>The Composite Score node only accepts an identifier column called <code>geoid</code>, <code>h3</code>, <code>quadbin</code> or <code>index</code>. In this workshop the precinct number is renamed <code>geoid</code> in the node <code>3. Add population</code>, so the table that reaches the score node has it. If the list is empty, check that the node is connected to <code>3. Supply per 1k</code> and that you imported the latest file from step 0 (download it again if you took it earlier). On the challenge track, check that you typed <code>geoid</code> as the new name for <code>precinct</code> in the first Join.</p>
   </details>
   <details>
-    <summary>The Join says "Type of selected columns must be identical"</summary>
-    <p>The right key of the <code>3. Attach index</code> Join starts on <code>spatial_score</code>, a number. Change it to <code>geoid</code>, which is text like the left key.</p>
+    <summary>The Join says "Type of selected columns must be identical" (red on the left key)</summary>
+    <p>Two possible causes. Most often the score node has not run yet, so the Join cannot see its columns: press <b>Run</b>, wait for it to finish, then click an empty spot on the canvas and select the Join again. Otherwise the right key of the <code>3. Attach index</code> Join is still on <code>spatial_score</code>, a number: change it to <code>geoid</code>, which is text like the left key.</p>
   </details>
   <details>
     <summary>The run fails with "Error encountered during execution. Retrying may solve the problem"</summary>
