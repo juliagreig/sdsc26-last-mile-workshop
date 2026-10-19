@@ -18,8 +18,10 @@ You need a CARTO account. If you do not have one, sign up for a free trial at [a
 | --- | --- |
 | `workflow/1_last_mile_START_HERE.sql` | The partial workflow. Data loading, measuring and per resident rates are done. You finish it live. |
 | `workflow/2_last_mile_COMPLETE.sql` | The complete workflow. Import this one if you get stuck or want to see the end result. |
+| `workflow/3_last_mile_CHALLENGE.sql` | Optional challenge track. Only loading and measuring are done: you build the three Joins, the two per 1,000 rates, the score and the map yourself (8 nodes). |
 | `docs/index.html` | The illustrated step by step guide (published with GitHub Pages) |
-| `guide/cheat_sheet_finish_the_workflow.md` | Exact settings for the three nodes you add |
+| `guide/cheat_sheet_finish_the_workflow.md` | Exact settings for the three nodes you add (core track) |
+| `guide/cheat_sheet_challenge_build_stages_3_to_5.md` | Exact settings for all 8 nodes of the challenge track |
 | `guide/prompts.md` | Text to copy and paste (AI agent prompt, starter questions, styling steps) |
 | `data/` | The three source datasets (the workflows read them from this repo). Details in [data/README.md](data/README.md) |
 | `workflow/advanced/` | The same workflows as JSON bundles for the CARTO CLI (optional) |
@@ -45,6 +47,8 @@ Add three nodes in the purple **Your turn** panel at the end of the workflow. Fo
 3. **Create Builder Map** called `4. Create map`: builds the map from your results.
 
 **Predict first:** which precinct do you think will rank number one? Write it down, then run the workflow.
+
+**Want to build more?** Import `workflow/3_last_mile_CHALLENGE.sql` instead of the start file and build all of stages 3, 4 and 5 yourself, with the [challenge cheat sheet](guide/cheat_sheet_challenge_build_stages_3_to_5.md). It is optional and self paced.
 
 ### 4. Try two experiments
 

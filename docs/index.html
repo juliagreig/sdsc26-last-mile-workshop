@@ -113,11 +113,17 @@ summary{cursor:pointer;padding:12px 0;font-weight:600}
 details[open] summary{border-bottom:1px solid var(--line);margin-bottom:10px}
 details p,details ul{margin:8px 0 14px}
 footer{padding:30px 0 50px;color:var(--muted);font-size:14px;border-top:1px solid var(--line);margin-top:40px}
+body[data-track="core"] [data-track-only="challenge"],body[data-track="challenge"] [data-track-only="core"]{display:none!important}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 4px}
+.tab{flex:1;min-width:150px;background:var(--card);color:var(--ink);border:2px solid var(--line);border-radius:12px;padding:12px 16px;font:inherit;font-weight:600;cursor:pointer;text-align:left}
+.tab small{display:block;font-weight:400;color:var(--muted);font-size:13px;margin-top:2px}
+.tab[aria-selected="true"]{border-color:var(--blue);background:var(--blue-soft)}
+.trackbadge{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:var(--blue-soft);color:var(--blue);margin-left:8px;vertical-align:middle}
 @media(max-width:520px){.bar b{display:none}.bar .grow{display:none}.prog{max-width:none}}
 @media print{.bar{display:none}.step{break-inside:avoid}}
 </style>
 </head>
-<body>
+<body data-track="core">
 
 <div class="bar" role="banner">
   <div class="wrap">
@@ -153,17 +159,31 @@ footer{padding:30px 0 50px;color:var(--muted);font-size:14px;border-top:1px soli
     <div class="card"><h3>3. AI agent</h3><p>Add an agent to the map and ask questions about the precincts in plain English.</p></div>
   </div>
   <ul class="toc">
+    <li><a href="#tracks">Tracks</a></li>
     <li><a href="#requirements">Requirements</a></li>
     <li><a href="#s0">0 Setup</a></li>
     <li><a href="#s1">1 Import</a></li>
     <li><a href="#s2">2 Run</a></li>
-    <li><a href="#s3">3 Finish</a></li>
+    <li><a href="#s3">3 Build</a></li>
     <li><a href="#s4">4 Experiments</a></li>
     <li><a href="#s5">5 Style the map</a></li>
     <li><a href="#s6">6 AI agent</a></li>
     <li><a href="#stuck">If you get stuck</a></li>
     <li><a href="#resources">Resources</a></li>
   </ul>
+</section>
+
+<section id="tracks">
+  <h2>Choose your track</h2>
+  <p class="lead">Same data, same map, same result. You choose how much of the workflow you build yourself. You can switch at any time: the guide changes with you and your ticks are kept.</p>
+  <div class="tabs" role="tablist" aria-label="Choose your track">
+    <button type="button" class="tab" role="tab" id="tab-core" aria-selected="true" data-set-track="core">Core track<small>Finish 3 nodes together with the facilitator. About 10 minutes.</small></button>
+    <button type="button" class="tab" role="tab" id="tab-challenge" aria-selected="false" data-set-track="challenge">Challenge track<small>Build 8 nodes yourself, self paced. About 25 minutes.</small></button>
+  </div>
+  <div class="tip">
+    <p data-track-only="core"><b>Core track.</b> New to workflows? Start here. The facilitator guides the room through the last three nodes: the score, the join and the map.</p>
+    <p data-track-only="challenge"><b>Challenge track.</b> Comfortable with workflows, or want to build more? You also build the joins and the per 1,000 rates yourself (8 nodes in total). The settings are in step 3. If you run out of time, import the complete file and carry on from step 5.</p>
+  </div>
 </section>
 
 <section id="requirements">
@@ -175,7 +195,7 @@ footer{padding:30px 0 50px;color:var(--muted);font-size:14px;border-top:1px soli
       <tbody>
         <tr><td><b>A CARTO account</b></td><td>Free trial at <a href="https://app.carto.com" target="_blank" rel="noopener">app.carto.com</a>. The help desk can set one up if you do not have it.</td></tr>
         <tr><td><b>CARTO AI turned on</b></td><td>An admin of your org (in a new trial, that is you) must switch it on. Needed for the agent in step 6. See step 0.</td></tr>
-        <tr><td><b>The workflow files</b></td><td>Two <code>.sql</code> files from the <a href="https://github.com/juliagreig/sdsc26-last-mile-workshop/tree/main/workflow" target="_blank" rel="noopener">workflow folder</a> of this repo. Step 0 shows how to get them.</td></tr>
+        <tr><td><b>The workflow files</b></td><td>Two <code>.sql</code> files: the one for your track and the complete one as a safety net. They are also in the <a href="https://github.com/juliagreig/sdsc26-last-mile-workshop/tree/main/workflow" target="_blank" rel="noopener">workflow folder</a> of this repo. Step 0 shows how to get them.</td></tr>
         <tr><td><b>A modern browser</b></td><td>Chrome, Edge, Firefox or Safari, and an internet connection.</td></tr>
         <tr><td><b>About 60 minutes</b></td><td>The first workflow run takes about 2 minutes. You do not need any SQL or coding knowledge.</td></tr>
       </tbody>
@@ -191,18 +211,22 @@ footer{padding:30px 0 50px;color:var(--muted);font-size:14px;border-top:1px soli
     <ol class="todo">
       <li><input type="checkbox" id="c0a"><label for="c0a">Log in to <a href="https://app.carto.com" target="_blank" rel="noopener">app.carto.com</a> and check that <b>Workflows</b> and <b>Maps</b> appear in the left menu.</label></li>
       <li><input type="checkbox" id="c0b"><label for="c0b">Go to <b>Settings</b>, then <b>CARTO AI</b>, then <b>Configuration</b>. Switch on <b>Enable CARTO AI</b>. Also check that <b>AI Agents in Builder maps</b> is on.</label></li>
-      <li><input type="checkbox" id="c0c"><label for="c0c">Download the two workflow files (buttons below).</label></li>
+      <li><input type="checkbox" id="c0c"><label for="c0c">Download the two workflow files for your track (buttons below).</label></li>
     </ol>
     <figure>
       <img src="img/01-enable-carto-ai.png" alt="CARTO AI configuration page showing the Enable CARTO AI switch and the AI Agents in Builder maps switch" loading="lazy">
       <figcaption>Settings, CARTO AI, Configuration. Both switches must be on.</figcaption>
     </figure>
     <div class="btns">
-      <a class="btn" href="files/1_last_mile_START_HERE.sql" download="1_last_mile_START_HERE.sql">1_last_mile_START_HERE.sql</a>
+      <a class="btn" data-track-only="core" href="files/1_last_mile_START_HERE.sql" download="1_last_mile_START_HERE.sql">1_last_mile_START_HERE.sql</a>
+      <a class="btn" data-track-only="challenge" href="files/3_last_mile_CHALLENGE.sql" download="3_last_mile_CHALLENGE.sql">3_last_mile_CHALLENGE.sql</a>
       <a class="btn" href="files/2_last_mile_COMPLETE.sql" download="2_last_mile_COMPLETE.sql">2_last_mile_COMPLETE.sql</a>
     </div>
     <div class="warn"><p>If your browser asks whether to keep the file, choose <b>Keep</b>. The file must end in <code>.sql</code> (some browsers add <code>.txt</code>; rename it if so).</p></div>
-    <div class="see"><b>You should see</b>Two files named <code>1_last_mile_START_HERE.sql</code> and <code>2_last_mile_COMPLETE.sql</code> in your Downloads folder. Use START_HERE for the workshop. COMPLETE is your safety net.</div>
+    <div class="see"><b>You should see</b>
+      <span data-track-only="core">Two files named <code>1_last_mile_START_HERE.sql</code> and <code>2_last_mile_COMPLETE.sql</code> in your Downloads folder. Use START_HERE for the workshop. COMPLETE is your safety net.</span>
+      <span data-track-only="challenge">Two files named <code>3_last_mile_CHALLENGE.sql</code> and <code>2_last_mile_COMPLETE.sql</code> in your Downloads folder. Use CHALLENGE for the workshop. COMPLETE is your safety net.</span>
+    </div>
   </div>
 </article>
 
@@ -210,10 +234,12 @@ footer{padding:30px 0 50px;color:var(--muted);font-size:14px;border-top:1px soli
 <article class="step" id="s1">
   <header><div class="num">1</div><h2>Import the starter workflow</h2><span class="t">3 min</span></header>
   <div class="body">
-    <p>A workflow is a visual canvas where each box is one step of an analysis. The starter file already contains the first half of the analysis.</p>
+    <p>A workflow is a visual canvas where each box is one step of an analysis.
+      <span data-track-only="core">The starter file already contains the first half of the analysis.</span>
+      <span data-track-only="challenge">The challenge file already loads and measures the data (stages 1 and 2). You build the rest.</span></p>
     <ol class="todo">
       <li><input type="checkbox" id="c1a"><label for="c1a">In CARTO open <b>Workflows</b> from the left menu.</label></li>
-      <li><input type="checkbox" id="c1b"><label for="c1b">Click the <b>import</b> icon next to <b>+ New workflow</b>, or drag <code>1_last_mile_START_HERE.sql</code> onto the page.</label></li>
+      <li><input type="checkbox" id="c1b"><label for="c1b">Click the <b>import</b> icon next to <b>+ New workflow</b>, or drag <span data-track-only="core"><code>1_last_mile_START_HERE.sql</code></span><span data-track-only="challenge"><code>3_last_mile_CHALLENGE.sql</code></span> onto the page.</label></li>
       <li><input type="checkbox" id="c1c"><label for="c1c">Choose the <b>CARTO Data Warehouse</b> connection and click <b>Create workflow</b>.</label></li>
     </ol>
     <figure>
@@ -224,12 +250,17 @@ footer{padding:30px 0 50px;color:var(--muted);font-size:14px;border-top:1px soli
       <img src="img/03-import-dialog.png" alt="Import workflow dialog with the CARTO Data Warehouse connection selected" style="max-width:520px" loading="lazy">
       <figcaption>Pick CARTO Data Warehouse and press Create workflow.</figcaption>
     </figure>
-    <div class="see"><b>You should see</b>A canvas with four colored panels: <b>1 Load</b> (yellow), <b>2 Measure</b> (blue), <b>3 Combine and rate</b> (green) and an empty purple panel called <b>Your turn</b>.</div>
-    <figure>
+    <div class="see" data-track-only="core"><b>You should see</b>A canvas with four colored panels: <b>1 Load</b> (yellow), <b>2 Measure</b> (blue), <b>3 Combine and rate</b> (green) and an empty purple panel called <b>Your turn</b>.</div>
+    <figure data-track-only="core">
       <img src="img/04-start-canvas.png" alt="The starter workflow canvas with yellow, blue and green stage panels and a purple Your turn panel" loading="lazy">
       <figcaption>The starter workflow. The purple panel is where you add three nodes in step 3.</figcaption>
     </figure>
-    <div class="tip"><p>The imported workflow is named after the file, so it will be called <code>1_last_mile_START_HERE</code>.</p></div>
+    <div class="see" data-track-only="challenge"><b>You should see</b>A canvas with two stage panels, <b>1 Load</b> (yellow) and <b>2 Measure</b> (blue), and a big empty purple panel called <b>Your challenge</b>.</div>
+    <figure data-track-only="challenge">
+      <img src="img/19-challenge-start-canvas.png" alt="The challenge workflow canvas with yellow and blue stage panels and a large purple Your challenge panel" loading="lazy">
+      <figcaption>The challenge workflow. The purple panel is where you build stages 3, 4 and 5 in step 3.</figcaption>
+    </figure>
+    <div class="tip"><p>The imported workflow is named after the file, so it will be called <code data-track-only="core">1_last_mile_START_HERE</code><code data-track-only="challenge">3_last_mile_CHALLENGE</code>.</p></div>
   </div>
 </article>
 
@@ -247,7 +278,8 @@ footer{padding:30px 0 50px;color:var(--muted);font-size:14px;border-top:1px soli
       <tbody>
         <tr><td><b>1 Load</b></td><td>Three open datasets are imported: parking tickets for commercial vehicles, precinct boundaries, and loading zone signs. A small table adds how many people live in each precinct.</td></tr>
         <tr><td><b>2 Measure</b></td><td>Count tickets per precinct (demand) and legal loading zones per precinct (supply). Filters keep only the 10 study precincts and the dates in the Variables.</td></tr>
-        <tr><td><b>3 Combine and rate</b></td><td>Everything goes into one table with one row per precinct, then tickets and loading zones are divided by population, per 1,000 residents.</td></tr>
+        <tr data-track-only="core"><td><b>3 Combine and rate</b></td><td>Everything goes into one table with one row per precinct, then tickets and loading zones are divided by population, per 1,000 residents.</td></tr>
+        <tr data-track-only="challenge"><td><b>3 to 5</b></td><td>Not there yet: you build them in step 3. They combine the tables, score each precinct and create the map.</td></tr>
       </tbody>
     </table>
     <figure>
@@ -261,12 +293,112 @@ footer{padding:30px 0 50px;color:var(--muted);font-size:14px;border-top:1px soli
 
 <!-- STEP 3 -->
 <article class="step" id="s3">
-  <header><div class="num">3</div><h2>Finish the workflow: three nodes</h2><span class="t">10 min</span></header>
+  <header><div class="num">3</div><h2 data-track-only="core">Finish the workflow: three nodes</h2><h2 data-track-only="challenge">Build stages 3, 4 and 5: eight nodes</h2><span class="t"><span data-track-only="core">10 min</span><span data-track-only="challenge">25 min</span></span></header>
   <div class="body">
-    <p>Now you add the last three nodes, inside the purple <b>Your turn</b> panel. To add a node, open the <b>Components</b> tab on the left, search for it by name, drag it onto the canvas, and connect its input to the output of the previous node. Double click a node title to rename it.</p>
+    <div data-track-only="core">
+      <p>Now you add the last three nodes, inside the purple <b>Your turn</b> panel. To add a node, open the <b>Components</b> tab on the left, search for it by name, drag it onto the canvas, and connect its input to the output of the previous node. Double click a node title to rename it.</p>
+    </div>
+    <div data-track-only="challenge">
+      <p>You build the rest of the workflow inside the big purple <b>Your challenge</b> panel: eight nodes in three stages. To add a node, open the <b>Components</b> tab on the left, search for it by name, drag it onto the canvas, and connect its inputs to the outputs of the upstream nodes. Double click a node title to rename it. The upstream nodes you need are already on the canvas.</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Node on the canvas</th><th>What it gives you</th></tr></thead>
+        <tbody>
+          <tr><td><code>2. Study area precincts</code></td><td>the 10 precinct shapes (<code>precinct</code>, <code>geom</code>)</td></tr>
+          <tr><td><code>1. Population by precinct</code></td><td>residents per precinct (<code>precinct</code>, <code>population</code>)</td></tr>
+          <tr><td><code>2. Precinct as text</code></td><td>tickets per precinct (<code>violation_precinct</code>, <code>violations_sum</code>)</td></tr>
+          <tr><td><code>2. Count zones by precinct</code></td><td>loading zones per precinct (<code>precinct</code>, <code>order_number_count</code>)</td></tr>
+          <tr><td><code>1. Convert coordinates</code></td><td>the loading zone points (used again for the map)</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Stage 3: Combine and rate (5 nodes)</h3>
+      <p>Three Joins put everything into one table with one row per precinct. Two Create Column nodes then divide by population, so small and large precincts can be compared fairly. Every Join uses the join type <b>Left</b>, so a precinct is never dropped.</p>
+
+      <h3>Node 1: Join, called <code>3. Add population</code></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Setting</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Left table</td><td>output of <code>2. Study area precincts</code></td></tr>
+          <tr><td>Right table</td><td>output of <code>1. Population by precinct</code></td></tr>
+          <tr><td>Key column in left table</td><td><code>precinct</code></td></tr>
+          <tr><td>Key column in right table</td><td><code>precinct</code></td></tr>
+          <tr><td>Join type</td><td><code>Left</code></td></tr>
+          <tr><td>Left table columns to keep</td><td><code>precinct</code>, <code>geom</code></td></tr>
+          <tr><td>Right table columns to keep</td><td><code>population</code></td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Node 2: Join, called <code>3. Add violations</code></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Setting</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Left table</td><td>output of <code>3. Add population</code></td></tr>
+          <tr><td>Right table</td><td>output of <code>2. Precinct as text</code></td></tr>
+          <tr><td>Key column in left table</td><td><code>precinct</code></td></tr>
+          <tr><td>Key column in right table</td><td><code>violation_precinct</code> (the name differs from the left key)</td></tr>
+          <tr><td>Join type</td><td><code>Left</code></td></tr>
+          <tr><td>Left table columns to keep</td><td><code>precinct</code>, <code>geom</code>, <code>population</code></td></tr>
+          <tr><td>Right table columns to keep</td><td><code>violations_sum</code>, renamed to <code>violations</code></td></tr>
+        </tbody>
+      </table></div>
+      <figure>
+        <img src="img/20-join-violations-settings.png" alt="Join node settings with violation_precinct as the right key and violations_sum renamed to violations" style="max-width:300px" loading="lazy">
+        <figcaption>The second Join. The right key is <code>violation_precinct</code> and <code>violations_sum</code> is renamed to <code>violations</code>.</figcaption>
+      </figure>
+
+      <h3>Node 3: Join, called <code>3. Add loading zones</code></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Setting</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Left table</td><td>output of <code>3. Add violations</code></td></tr>
+          <tr><td>Right table</td><td>output of <code>2. Count zones by precinct</code></td></tr>
+          <tr><td>Key column in left table</td><td><code>precinct</code></td></tr>
+          <tr><td>Key column in right table</td><td><code>precinct</code></td></tr>
+          <tr><td>Join type</td><td><code>Left</code></td></tr>
+          <tr><td>Left table columns to keep</td><td><code>precinct</code>, <code>geom</code>, <code>population</code>, <code>violations</code></td></tr>
+          <tr><td>Right table columns to keep</td><td><code>order_number_count</code>, renamed to <code>loading_supply</code></td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Node 4: Create Column, called <code>3. Demand per 1k</code></h3>
+      <p>Tickets per 1,000 residents, the demand for curb space.</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Setting</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Input</td><td>output of <code>3. Add loading zones</code></td></tr>
+          <tr><td>Name for new column</td><td><code>demand_per_1k</code></td></tr>
+          <tr><td>Expression</td><td><code>violations / population * 1000</code></td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Node 5: Create Column, called <code>3. Supply per 1k</code></h3>
+      <p>Loading zones per 1,000 residents, the supply of curb space. <code>COALESCE</code> turns a missing value into 0, for a precinct with no loading zones at all.</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Setting</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Input</td><td>output of <code>3. Demand per 1k</code></td></tr>
+          <tr><td>Name for new column</td><td><code>loading_per_1k</code></td></tr>
+          <tr><td>Expression</td><td><code>COALESCE(loading_supply, 0) / population * 1000</code></td></tr>
+        </tbody>
+      </table></div>
+      <div class="pair narrow">
+        <figure><img src="img/21-create-column-demand.png" alt="Create Column settings for demand_per_1k" loading="lazy"><figcaption>Create Column for <code>demand_per_1k</code>.</figcaption></figure>
+        <figure><img src="img/22-create-column-supply.png" alt="Create Column settings for loading_per_1k" loading="lazy"><figcaption>Create Column for <code>loading_per_1k</code>.</figcaption></figure>
+      </div>
+      <ol class="todo">
+        <li><input type="checkbox" id="ch1"><label for="ch1">Add the three Joins (<code>3. Add population</code>, <code>3. Add violations</code>, <code>3. Add loading zones</code>) and set them from the tables above.</label></li>
+        <li><input type="checkbox" id="ch2"><label for="ch2">Add the two Create Column nodes (<code>3. Demand per 1k</code>, <code>3. Supply per 1k</code>) and type the expressions.</label></li>
+        <li><input type="checkbox" id="ch3"><label for="ch3">Click <b>Run</b>. Select <code>3. Supply per 1k</code> and open the <b>Data</b> tab.</label></li>
+      </ol>
+      <div class="see"><b>You should see</b>10 rows, one per precinct, with the columns <code>precinct</code>, <code>geom</code>, <code>population</code>, <code>violations</code>, <code>loading_supply</code>, <code>demand_per_1k</code> and <code>loading_per_1k</code>. For example, precinct 14 has 196 loading zones and precinct 13 has 71.</div>
+      <div class="warn"><p>If a column is empty, check the key columns of the Joins. The second Join is the tricky one: the right key is <code>violation_precinct</code>, not <code>precinct</code>.</p></div>
+
+      <h3>Stages 4 and 5: Score and Map (3 nodes)</h3>
+      <p>These are the same three nodes the core track adds. Their settings are below, as nodes 6, 7 and 8.</p>
+    </div>
     <div class="tip"><p><b>Predict first.</b> Which precinct do you think will rank number one for delivery pressure? Write it down before you run.</p></div>
 
-    <h3>Node 1: Composite Score Unsupervised, called <code>3. Priority index</code></h3>
+    <h3>Node <span data-track-only="core">1</span><span data-track-only="challenge">6</span>: Composite Score Unsupervised, called <code>3. Priority index</code></h3>
     <p>This node turns several measurements into one 0 to 100 score. Search the Components tab for <code>composite score</code> and connect it after <code>3. Supply per 1k</code>.</p>
     <div class="tablewrap"><table>
       <thead><tr><th>Setting</th><th>Value</th></tr></thead>
@@ -284,13 +416,13 @@ footer{padding:30px 0 50px;color:var(--muted);font-size:14px;border-top:1px soli
       <figure><img src="img/07-score-settings-bottom.png" alt="Composite Score settings, scaling, aggregation and output formatting" loading="lazy"><figcaption>Scaling, aggregation and return range.</figcaption></figure>
     </div>
     <p><b>Why Inverse?</b> More loading zones per resident means less pressure, so that variable has to push the score down. Direct means a higher value raises the score. Inverse means a higher value lowers it.</p>
-    <div class="warn"><p>The column list only appears after the previous nodes have run, which is why you ran the workflow first. If you forget to zero the other three columns, the ranking changes.</p></div>
+    <div class="warn"><p>The column list only appears after the previous nodes have run, so run the workflow before you configure this node. If you forget to zero the other three columns, the ranking changes.</p></div>
     <ol class="todo">
       <li><input type="checkbox" id="c3a"><label for="c3a">Add <b>Composite Score Unsupervised</b>, connect it, rename it <code>3. Priority index</code>.</label></li>
       <li><input type="checkbox" id="c3b"><label for="c3b">Set the weights and options from the table above.</label></li>
     </ol>
 
-    <h3>Node 2: Join, called <code>3. Attach index</code></h3>
+    <h3>Node <span data-track-only="core">2</span><span data-track-only="challenge">7</span>: Join, called <code>3. Attach index</code></h3>
     <p>The score table has no shapes. This node adds the score back onto the precinct polygons.</p>
     <div class="tablewrap"><table>
       <thead><tr><th>Setting</th><th>Value</th></tr></thead>
@@ -312,7 +444,7 @@ footer{padding:30px 0 50px;color:var(--muted);font-size:14px;border-top:1px soli
       <li><input type="checkbox" id="c3d"><label for="c3d">Fill in the settings from the table above.</label></li>
     </ol>
 
-    <h3>Node 3: Create Builder Map, called <code>4. Create map</code></h3>
+    <h3>Node <span data-track-only="core">3</span><span data-track-only="challenge">8</span>: Create Builder Map, called <code>4. Create map</code></h3>
     <div class="tablewrap"><table>
       <thead><tr><th>Setting</th><th>Value</th></tr></thead>
       <tbody>
@@ -490,27 +622,46 @@ footer{padding:30px 0 50px;color:var(--muted);font-size:14px;border-top:1px soli
   function load(){try{state=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){state={};}}
   function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
   load();
-  var boxes=[].slice.call(document.querySelectorAll('ol.todo input[type=checkbox]'));
+  var allBoxes=[].slice.call(document.querySelectorAll('ol.todo input[type=checkbox]'));
   var fill=document.getElementById('progfill'), txt=document.getElementById('progtext');
+  function visible(b){return b.offsetParent!==null;}
   function refresh(){
-    var done=0;
-    boxes.forEach(function(b){
+    var done=0,total=0;
+    allBoxes.forEach(function(b){
       b.closest('li').classList.toggle('on',b.checked);
-      if(b.checked)done++;
+      if(visible(b)){total++;if(b.checked)done++;}
     });
     document.querySelectorAll('.step').forEach(function(s){
-      var bs=s.querySelectorAll('input[type=checkbox]');
-      var all=bs.length>0&&[].every.call(bs,function(b){return b.checked;});
+      var bs=[].filter.call(s.querySelectorAll('input[type=checkbox]'),visible);
+      var all=bs.length>0&&bs.every(function(b){return b.checked;});
       s.classList.toggle('done',all);
     });
-    fill.style.width=(boxes.length?Math.round(done/boxes.length*100):0)+'%';
-    txt.textContent=done+' of '+boxes.length+' done';
+    fill.style.width=(total?Math.round(done/total*100):0)+'%';
+    txt.textContent=done+' of '+total+' done';
   }
+  var boxes=allBoxes;
   boxes.forEach(function(b){
     if(state[b.id])b.checked=true;
     b.addEventListener('change',function(){state[b.id]=b.checked;save();refresh();});
   });
-  refresh();
+  function setTrack(t,save_){
+    if(t!=='core'&&t!=='challenge')t='core';
+    document.body.setAttribute('data-track',t);
+    document.querySelectorAll('[data-set-track]').forEach(function(b){
+      b.setAttribute('aria-selected',b.getAttribute('data-set-track')===t?'true':'false');
+    });
+    if(save_){try{localStorage.setItem(KEY+'-track',t);}catch(e){}}
+    refresh();
+  }
+  document.querySelectorAll('[data-set-track]').forEach(function(b){
+    b.addEventListener('click',function(){setTrack(b.getAttribute('data-set-track'),true);});
+  });
+  var startTrack='core', fromHash=false;
+  try{startTrack=localStorage.getItem(KEY+'-track')||'core';}catch(e){}
+  var h=(location.hash||'').toLowerCase();
+  if(h==='#challenge'||h==='#core'){startTrack=h.slice(1);fromHash=true;}
+  setTrack(startTrack,fromHash);
+  if(fromHash){var tr=document.getElementById('tracks');if(tr)tr.scrollIntoView();}
 
   document.querySelectorAll('button[data-copy]').forEach(function(btn){
     btn.addEventListener('click',function(){
