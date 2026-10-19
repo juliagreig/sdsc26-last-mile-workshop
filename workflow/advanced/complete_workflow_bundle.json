@@ -428,7 +428,7 @@
        "name": "lefttablecolumns",
        "title": "Left table columns",
        "type": "ColumnsForJoin",
-       "value": "[{\"name\": \"precinct\", \"joinname\": \"precinct\"}, {\"name\": \"geom\", \"joinname\": \"geom\"}]"
+       "value": "[{\"name\": \"precinct\", \"joinname\": \"geoid\"}, {\"name\": \"geom\", \"joinname\": \"geom\"}]"
       },
       {
        "name": "righttablekeycolumn",
@@ -480,13 +480,13 @@
        "name": "lefttablekeycolumn",
        "title": "Key column in left table",
        "type": "Column",
-       "value": "precinct"
+       "value": "geoid"
       },
       {
        "name": "lefttablecolumns",
        "title": "Left table columns",
        "type": "ColumnsForJoin",
-       "value": "[{\"name\": \"precinct\", \"joinname\": \"precinct\"}, {\"name\": \"geom\", \"joinname\": \"geom\"}, {\"name\": \"population\", \"joinname\": \"population\"}]"
+       "value": "[{\"name\": \"geoid\", \"joinname\": \"geoid\"}, {\"name\": \"geom\", \"joinname\": \"geom\"}, {\"name\": \"population\", \"joinname\": \"population\"}]"
       },
       {
        "name": "righttablekeycolumn",
@@ -538,13 +538,13 @@
        "name": "lefttablekeycolumn",
        "title": "Key column in left table",
        "type": "Column",
-       "value": "precinct"
+       "value": "geoid"
       },
       {
        "name": "lefttablecolumns",
        "title": "Left table columns",
        "type": "ColumnsForJoin",
-       "value": "[{\"name\": \"precinct\", \"joinname\": \"precinct\"}, {\"name\": \"geom\", \"joinname\": \"geom\"}, {\"name\": \"population\", \"joinname\": \"population\"}, {\"name\": \"violations\", \"joinname\": \"violations\"}]"
+       "value": "[{\"name\": \"geoid\", \"joinname\": \"geoid\"}, {\"name\": \"geom\", \"joinname\": \"geom\"}, {\"name\": \"population\", \"joinname\": \"population\"}, {\"name\": \"violations\", \"joinname\": \"violations\"}]"
       },
       {
        "name": "righttablekeycolumn",
@@ -658,7 +658,7 @@
        "name": "indexcol",
        "title": "Column with unique geographic identifier",
        "type": "Column",
-       "value": "precinct"
+       "value": "geoid"
       },
       {
        "name": "scoringmethod",
@@ -752,19 +752,19 @@
        "name": "lefttablekeycolumn",
        "title": "Key column in left table",
        "type": "Column",
-       "value": "precinct"
+       "value": "geoid"
       },
       {
        "name": "lefttablecolumns",
        "title": "Left table columns",
        "type": "ColumnsForJoin",
-       "value": "[{\"name\": \"precinct\", \"joinname\": \"precinct\"}, {\"name\": \"geom\", \"joinname\": \"geom\"}, {\"name\": \"population\", \"joinname\": \"population\"}, {\"name\": \"violations\", \"joinname\": \"violations\"}, {\"name\": \"loading_supply\", \"joinname\": \"loading_supply\"}, {\"name\": \"demand_per_1k\", \"joinname\": \"demand_per_1k\"}, {\"name\": \"loading_per_1k\", \"joinname\": \"loading_per_1k\"}]"
+       "value": "[{\"name\": \"geoid\", \"joinname\": \"geoid\"}, {\"name\": \"geom\", \"joinname\": \"geom\"}, {\"name\": \"population\", \"joinname\": \"population\"}, {\"name\": \"violations\", \"joinname\": \"violations\"}, {\"name\": \"loading_supply\", \"joinname\": \"loading_supply\"}, {\"name\": \"demand_per_1k\", \"joinname\": \"demand_per_1k\"}, {\"name\": \"loading_per_1k\", \"joinname\": \"loading_per_1k\"}]"
       },
       {
        "name": "righttablekeycolumn",
        "title": "Key column in right table",
        "type": "Column",
-       "value": "precinct"
+       "value": "geoid"
       },
       {
        "name": "righttablecolumns",
@@ -831,7 +831,7 @@
      "width": 360,
      "height": 840,
      "inputs": [],
-     "markdown": "---\nlabel:\n---\n## 1 \u00b7 Load\nWe bring in three open datasets: parking tickets for commercial vehicles, precinct boundaries and loading zone signs. A small table adds how many people live in each precinct. Sign locations are converted into map coordinates."
+     "markdown": "---\nlabel:\n---\n## 1 · Load\nWe bring in three open datasets: parking tickets for commercial vehicles, precinct boundaries and loading zone signs. A small table adds how many people live in each precinct. Sign locations are converted into map coordinates."
     }
    },
    {
@@ -850,7 +850,7 @@
      "width": 540,
      "height": 840,
      "inputs": [],
-     "markdown": "---\nlabel:\n---\n## 2 \u00b7 Measure\nWe count what happens in each precinct: how many tickets were issued (demand) and how many legal loading zones exist (supply). Filters keep only our 10 precincts and the dates we care about. Change date_from and date_to in Variables to move the time window."
+     "markdown": "---\nlabel:\n---\n## 2 · Measure\nWe count what happens in each precinct: how many tickets were issued (demand) and how many legal loading zones exist (supply). Filters keep only our 10 precincts and the dates we care about. Change date_from and date_to in Variables to move the time window."
     }
    },
    {
@@ -869,7 +869,7 @@
      "width": 960,
      "height": 840,
      "inputs": [],
-     "markdown": "---\nlabel:\n---\n## 3 \u00b7 Combine and rate\nEverything goes into one table with one row per precinct. Then we divide by population: tickets per 1,000 residents and loading zones per 1,000 residents. Now small and large precincts can be compared fairly."
+     "markdown": "---\nlabel:\n---\n## 3 · Combine and rate\nEverything goes into one table with one row per precinct. Then we divide by population: tickets per 1,000 residents and loading zones per 1,000 residents. Now small and large precincts can be compared fairly."
     }
    },
    {
@@ -888,7 +888,7 @@
      "width": 350,
      "height": 840,
      "inputs": [],
-     "markdown": "---\nlabel:\n---\n## 4 \u00b7 Score\nTwo numbers become one. The Priority index scores each precinct from 0 to 100: more tickets and fewer loading zones means more delivery pressure. The score is then attached back to the precinct shapes."
+     "markdown": "---\nlabel:\n---\n## 4 · Score\nTwo numbers become one. The Priority index scores each precinct from 0 to 100: more tickets and fewer loading zones means more delivery pressure. The score is then attached back to the precinct shapes."
     }
    },
    {
@@ -907,7 +907,7 @@
      "width": 320,
      "height": 840,
      "inputs": [],
-     "markdown": "---\nlabel:\n---\n## 5 \u00b7 Map\nThe last node builds a Builder map for you: precincts colored by pressure and loading zones as points. Run again after a change and the map updates."
+     "markdown": "---\nlabel:\n---\n## 5 · Map\nThe last node builds a Builder map for you: precincts colored by pressure and loading zones as points. Run again after a change and the map updates."
     }
    }
   ],

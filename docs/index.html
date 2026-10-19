@@ -323,10 +323,11 @@ body[data-track="core"] [data-track-only="challenge"],body[data-track="challenge
           <tr><td>Key column in left table</td><td><code>precinct</code></td></tr>
           <tr><td>Key column in right table</td><td><code>precinct</code></td></tr>
           <tr><td>Join type</td><td><code>Left</code></td></tr>
-          <tr><td>Left table columns to keep</td><td><code>precinct</code>, <code>geom</code></td></tr>
+          <tr><td>Left table columns to keep</td><td><code>precinct</code>, renamed to <code>geoid</code> (type the new name in the field next to it), and <code>geom</code></td></tr>
           <tr><td>Right table columns to keep</td><td><code>population</code></td></tr>
         </tbody>
       </table></div>
+      <div class="tip"><p><b>Why rename precinct to geoid?</b> The score node you add later only accepts an identifier column called <code>geoid</code>, <code>h3</code>, <code>quadbin</code> or <code>index</code>. Renaming here, once, means every node after this one uses <code>geoid</code>.</p></div>
 
       <h3>Node 2: Join, called <code>3. Add violations</code></h3>
       <div class="tablewrap"><table>
@@ -334,10 +335,10 @@ body[data-track="core"] [data-track-only="challenge"],body[data-track="challenge
         <tbody>
           <tr><td>Left table</td><td>output of <code>3. Add population</code></td></tr>
           <tr><td>Right table</td><td>output of <code>2. Precinct as text</code></td></tr>
-          <tr><td>Key column in left table</td><td><code>precinct</code></td></tr>
+          <tr><td>Key column in left table</td><td><code>geoid</code></td></tr>
           <tr><td>Key column in right table</td><td><code>violation_precinct</code> (the name differs from the left key)</td></tr>
           <tr><td>Join type</td><td><code>Left</code></td></tr>
-          <tr><td>Left table columns to keep</td><td><code>precinct</code>, <code>geom</code>, <code>population</code></td></tr>
+          <tr><td>Left table columns to keep</td><td><code>geoid</code>, <code>geom</code>, <code>population</code></td></tr>
           <tr><td>Right table columns to keep</td><td><code>violations_sum</code>, renamed to <code>violations</code></td></tr>
         </tbody>
       </table></div>
@@ -352,10 +353,10 @@ body[data-track="core"] [data-track-only="challenge"],body[data-track="challenge
         <tbody>
           <tr><td>Left table</td><td>output of <code>3. Add violations</code></td></tr>
           <tr><td>Right table</td><td>output of <code>2. Count zones by precinct</code></td></tr>
-          <tr><td>Key column in left table</td><td><code>precinct</code></td></tr>
+          <tr><td>Key column in left table</td><td><code>geoid</code></td></tr>
           <tr><td>Key column in right table</td><td><code>precinct</code></td></tr>
           <tr><td>Join type</td><td><code>Left</code></td></tr>
-          <tr><td>Left table columns to keep</td><td><code>precinct</code>, <code>geom</code>, <code>population</code>, <code>violations</code></td></tr>
+          <tr><td>Left table columns to keep</td><td><code>geoid</code>, <code>geom</code>, <code>population</code>, <code>violations</code></td></tr>
           <tr><td>Right table columns to keep</td><td><code>order_number_count</code>, renamed to <code>loading_supply</code></td></tr>
         </tbody>
       </table></div>
@@ -390,7 +391,7 @@ body[data-track="core"] [data-track-only="challenge"],body[data-track="challenge
         <li><input type="checkbox" id="ch2"><label for="ch2">Add the two Create Column nodes (<code>3. Demand per 1k</code>, <code>3. Supply per 1k</code>) and type the expressions.</label></li>
         <li><input type="checkbox" id="ch3"><label for="ch3">Click <b>Run</b>. Select <code>3. Supply per 1k</code> and open the <b>Data</b> tab.</label></li>
       </ol>
-      <div class="see"><b>You should see</b>10 rows, one per precinct, with the columns <code>precinct</code>, <code>geom</code>, <code>population</code>, <code>violations</code>, <code>loading_supply</code>, <code>demand_per_1k</code> and <code>loading_per_1k</code>. For example, precinct 14 has 196 loading zones and precinct 13 has 71.</div>
+      <div class="see"><b>You should see</b>10 rows, one per precinct, with the columns <code>geoid</code>, <code>geom</code>, <code>population</code>, <code>violations</code>, <code>loading_supply</code>, <code>demand_per_1k</code> and <code>loading_per_1k</code>. For example, precinct 14 has 196 loading zones and precinct 13 has 71.</div>
       <div class="warn"><p>If a column is empty, check the key columns of the Joins. The second Join is the tricky one: the right key is <code>violation_precinct</code>, not <code>precinct</code>.</p></div>
 
       <h3>Stages 4 and 5: Score and Map (3 nodes)</h3>
@@ -399,23 +400,39 @@ body[data-track="core"] [data-track-only="challenge"],body[data-track="challenge
     <div class="tip"><p><b>Predict first.</b> Which precinct do you think will rank number one for delivery pressure? Write it down before you run.</p></div>
 
     <h3>Node <span data-track-only="core">1</span><span data-track-only="challenge">6</span>: Composite Score Unsupervised, called <code>3. Priority index</code></h3>
-    <p>This node turns several measurements into one 0 to 100 score. Search the Components tab for <code>composite score</code> and connect it after <code>3. Supply per 1k</code>.</p>
+    <p>This node turns several measurements into one 0 to 100 score. Search the Components tab for <code>composite score</code>, pick <b>Composite Score Unsupervised</b> (not Supervised) and connect it after <code>3. Supply per 1k</code>.</p>
     <div class="tablewrap"><table>
       <thead><tr><th>Setting</th><th>Value</th></tr></thead>
       <tbody>
         <tr><td>Input</td><td>output of <code>3. Supply per 1k</code></td></tr>
+        <tr><td>Column with unique geographic identifier</td><td><code>geoid</code> (the only column the list offers)</td></tr>
         <tr><td>Scoring method</td><td><code>CUSTOM_WEIGHTS</code></td></tr>
-        <tr><td>Weights</td><td><code>demand_per_1k</code> = 1, left on <b>Direct</b><br><code>loading_per_1k</code> = 1, switched to <b>Inverse</b> (click the arrow next to it)<br><code>population</code>, <code>violations</code> and <code>loading_supply</code> = <b>0</b></td></tr>
-        <tr><td>Scaling function</td><td><code>MIN_MAX_SCALER</code></td></tr>
-        <tr><td>Aggregation function</td><td><code>LINEAR</code></td></tr>
-        <tr><td>Output formatting</td><td><code>RETURN_RANGE</code>, from <code>0</code> to <code>100</code></td></tr>
+        <tr><td>Weights</td><td><code>demand_per_1k</code> = 1, left on <b>Direct</b><br><code>loading_per_1k</code> = 1, switched to <b>Inverse</b> (hover the row and click the arrow next to it)<br><code>population</code>, <code>violations</code> and <code>loading_supply</code> = <b>0</b></td></tr>
+        <tr><td>Scaling function</td><td><code>MIN_MAX_SCALER</code> (already selected)</td></tr>
+        <tr><td>Aggregation function</td><td><code>LINEAR</code> (already selected)</td></tr>
+        <tr><td>Output formatting</td><td><code>RETURN_RANGE</code>, then set the range from <code>0</code> to <code>100</code> (the Max box starts at 1)</td></tr>
       </tbody>
     </table></div>
+    <figure>
+      <img src="img/23-score-pick-geoid.png" alt="The identifier dropdown of the Composite Score node listing the geoid column" style="max-width:300px" loading="lazy">
+      <figcaption>The identifier list only offers a column called <code>geoid</code> (or h3, quadbin, index).</figcaption>
+    </figure>
     <div class="pair narrow">
-      <figure><img src="img/06-score-settings-top.png" alt="Composite Score settings, scoring method and weights list" loading="lazy"><figcaption>Scoring method and weights. Yours will show weight 1 on every column until you change them.</figcaption></figure>
-      <figure><img src="img/07-score-settings-bottom.png" alt="Composite Score settings, scaling, aggregation and output formatting" loading="lazy"><figcaption>Scaling, aggregation and return range.</figcaption></figure>
+      <figure><img src="img/06-score-settings-top.png" alt="Composite Score settings with geoid, CUSTOM_WEIGHTS, weights 0, 0, 0, 1, 1 and an inverse arrow on loading_per_1k" loading="lazy"><figcaption>Identifier, scoring method and weights. <code>population</code>, <code>violations</code> and <code>loading_supply</code> are 0 and <code>loading_per_1k</code> has the downward (Inverse) arrow.</figcaption></figure>
+      <figure><img src="img/07-score-settings-bottom.png" alt="Composite Score settings, scaling, aggregation and output formatting RETURN_RANGE from 0 to 100" loading="lazy"><figcaption>Scaling, aggregation and return range 0 to 100.</figcaption></figure>
     </div>
-    <p><b>Why Inverse?</b> More loading zones per resident means less pressure, so that variable has to push the score down. Direct means a higher value raises the score. Inverse means a higher value lowers it.</p>
+    <details>
+      <summary>What do these settings mean, and why these values?</summary>
+      <ul>
+        <li><b>Column with unique geographic identifier.</b> The score is calculated for every row, and the node needs a column that names the area each row describes (here, the precinct number). It only accepts a column called <code>geoid</code>, <code>h3</code>, <code>quadbin</code> or <code>index</code>, which is why the precinct number was renamed <code>geoid</code> earlier in the workflow.</li>
+        <li><b>Scoring method, CUSTOM_WEIGHTS.</b> You decide how much each variable counts. The other methods let the data decide: ENTROPY gives more weight to variables that vary more between areas, FIRST_PC uses the main pattern across all variables.</li>
+        <li><b>Weights.</b> A weight of 0 takes a column out of the score. <code>population</code>, <code>violations</code> and <code>loading_supply</code> are raw counts: a big precinct would score high just for being big. The two rates per 1,000 residents compare precincts fairly, so only those two count, each with weight 1.</li>
+        <li><b>Direct and Inverse.</b> Direct means a higher value raises the score. Inverse means a higher value lowers it. Tickets per 1,000 residents is Direct: more tickets, more pressure. Loading zones per 1,000 residents is Inverse: more legal curb space, less pressure.</li>
+        <li><b>Scaling function, MIN_MAX_SCALER.</b> Tickets per 1,000 residents run into the thousands and loading zones per 1,000 are single digits. Min max scaling squeezes each variable into the same 0 to 1 scale (lowest value 0, highest 1) so neither one dominates just because its numbers are bigger.</li>
+        <li><b>Aggregation function, LINEAR.</b> Combines the scaled variables as a weighted average.</li>
+        <li><b>Output formatting, RETURN_RANGE 0 to 100.</b> Stretches the final score onto a 0 to 100 scale, so the least pressured precinct is 0 and the most pressured is 100. Without it you would get values between 0 and 1.</li>
+      </ul>
+    </details>
     <div class="warn"><p>The column list only appears after the previous nodes have run, so run the workflow before you configure this node. If you forget to zero the other three columns, the ranking changes.</p></div>
     <ol class="todo">
       <li><input type="checkbox" id="c3a"><label for="c3a">Add <b>Composite Score Unsupervised</b>, connect it, rename it <code>3. Priority index</code>.</label></li>
@@ -429,16 +446,26 @@ body[data-track="core"] [data-track-only="challenge"],body[data-track="challenge
       <tbody>
         <tr><td>Left table</td><td>output of <code>3. Supply per 1k</code></td></tr>
         <tr><td>Right table</td><td>output of <code>3. Priority index</code></td></tr>
-        <tr><td>Key column in both tables</td><td><code>precinct</code></td></tr>
-        <tr><td>Join type</td><td><code>Left</code></td></tr>
-        <tr><td>Left columns to keep</td><td><code>precinct</code>, <code>geom</code>, <code>population</code>, <code>violations</code>, <code>loading_supply</code>, <code>demand_per_1k</code>, <code>loading_per_1k</code></td></tr>
-        <tr><td>Right columns to keep</td><td><code>spatial_score</code>, renamed to <code>priority_index</code></td></tr>
+        <tr><td>Key column in left table</td><td><code>geoid</code></td></tr>
+        <tr><td>Key column in right table</td><td><code>geoid</code> (the list starts on <code>spatial_score</code>, which is wrong: change it)</td></tr>
+        <tr><td>Left columns to keep</td><td>all seven: <code>geoid</code>, <code>geom</code>, <code>population</code>, <code>violations</code>, <code>loading_supply</code>, <code>demand_per_1k</code>, <code>loading_per_1k</code> (open the list, tick <b>Select all</b>, press <b>Add</b>)</td></tr>
+        <tr><td>Right columns to keep</td><td><code>spatial_score</code> only, renamed to <code>priority_index</code> (type the new name in the field next to it)</td></tr>
+        <tr><td>Join type</td><td><code>Left</code> (it starts on Inner)</td></tr>
       </tbody>
     </table></div>
-    <figure>
-      <img src="img/08-join-settings.png" alt="Join node settings with the right table column spatial_score renamed to priority_index" style="max-width:300px" loading="lazy">
-      <figcaption>The Join settings. Note the rename of spatial_score to priority_index.</figcaption>
-    </figure>
+    <div class="pair narrow">
+      <figure><img src="img/08-join-settings.png" alt="Join node settings with geoid as the left key and the left table columns list" loading="lazy"><figcaption>Left key <code>geoid</code> and the left columns.</figcaption></figure>
+      <figure><img src="img/24-join-settings-bottom.png" alt="Join node settings with geoid as the right key, spatial_score renamed to priority_index and join type Left" loading="lazy"><figcaption>Right key <code>geoid</code>, <code>spatial_score</code> renamed to <code>priority_index</code>, join type Left.</figcaption></figure>
+    </div>
+    <details>
+      <summary>What do these settings mean, and why these values?</summary>
+      <ul>
+        <li><b>Why a Join.</b> The score table has one row per precinct but no shapes. The table from <code>3. Supply per 1k</code> has the shapes. Joining them on the precinct id puts the score next to the polygons, which the map needs.</li>
+        <li><b>Key columns.</b> The Join matches rows that have the same value in the key column of each table. Both keys must hold the same kind of value, so both are <code>geoid</code>. Picking <code>spatial_score</code> (a number) against <code>geoid</code> (text) gives a "type must be identical" error.</li>
+        <li><b>Left join.</b> Keeps every row of the left table (every precinct) even if the right table has no match. An Inner join would silently drop precincts without a match.</li>
+        <li><b>Columns to keep.</b> Without a selection the Join keeps nothing, so you pick what the map needs. Renaming <code>spatial_score</code> to <code>priority_index</code> gives the column a name that makes sense in the map and for the agent.</li>
+      </ul>
+    </details>
     <ol class="todo">
       <li><input type="checkbox" id="c3c"><label for="c3c">Add <b>Join</b>, connect both inputs, rename it <code>3. Attach index</code>.</label></li>
       <li><input type="checkbox" id="c3d"><label for="c3d">Fill in the settings from the table above.</label></li>
@@ -466,16 +493,16 @@ body[data-track="core"] [data-track-only="challenge"],body[data-track="challenge
     <p>Select <code>3. Attach index</code> and open the <b>Data</b> tab at the bottom.</p>
     <figure>
       <img src="img/09-join-results.png" alt="Data tab showing the joined table with 10 rows" loading="lazy">
-      <figcaption>Ten rows, one per precinct, with the shapes and the new priority_index column.</figcaption>
+      <figcaption>Ten rows, one per precinct (the <code>geoid</code> column), with the new priority_index column on the right. Scroll the table sideways to see it.</figcaption>
     </figure>
     <div class="see"><b>You should see</b>
-      <p>10 rows. Sorted by <code>priority_index</code>, the ranking should be:</p>
+      <p>10 rows. The <code>geoid</code> column holds the precinct number. Compare <code>priority_index</code> with this ranking:</p>
       <div class="tablewrap"><table>
         <thead><tr><th>Precinct</th><th>13</th><th>14</th><th>7</th><th>9</th><th>6</th><th>10</th><th>18</th><th>17</th><th>1</th><th>5</th></tr></thead>
         <tbody><tr><td>priority_index</td><td>100</td><td>87.8</td><td>87.8</td><td>85.9</td><td>85.1</td><td>67.7</td><td>47.0</td><td>45.9</td><td>18.5</td><td>0</td></tr></tbody>
       </table></div>
     </div>
-    <p>If your numbers differ, check that <code>precinct</code> is the key column and that <code>loading_per_1k</code> is set to <b>Inverse</b>.</p>
+    <p>If your numbers differ, check that both Join keys are <code>geoid</code> and that <code>loading_per_1k</code> is set to <b>Inverse</b>.</p>
     <figure>
       <img src="img/11-complete-canvas.png" alt="The complete workflow canvas with all five stage panels" loading="lazy">
       <figcaption>The finished workflow, as in COMPLETE.sql.</figcaption>
@@ -567,6 +594,18 @@ body[data-track="core"] [data-track-only="challenge"],body[data-track="challenge
     <p>Import <code>2_last_mile_COMPLETE.sql</code> the same way as in step 1. It already contains all the nodes. Run it and carry on from step 5.</p>
   </details>
   <details>
+    <summary>The score node says UNEXECUTABLE, "No value assigned", and the identifier list is empty</summary>
+    <p>The Composite Score node only accepts an identifier column called <code>geoid</code>, <code>h3</code>, <code>quadbin</code> or <code>index</code>. In this workshop the precinct number is renamed <code>geoid</code> in the node <code>3. Add population</code>, so the table that reaches the score node has it. If the list is empty, check that the node is connected to <code>3. Supply per 1k</code> and that you imported the latest file from step 0 (download it again if you took it earlier). On the challenge track, check that you typed <code>geoid</code> as the new name for <code>precinct</code> in the first Join.</p>
+  </details>
+  <details>
+    <summary>The Join says "Type of selected columns must be identical"</summary>
+    <p>The right key of the <code>3. Attach index</code> Join starts on <code>spatial_score</code>, a number. Change it to <code>geoid</code>, which is text like the left key.</p>
+  </details>
+  <details>
+    <summary>The run fails with "Error encountered during execution. Retrying may solve the problem"</summary>
+    <p>This is usually a temporary hiccup while the data is downloaded. Wait for the run to stop and press <b>Run</b> again.</p>
+  </details>
+  <details>
     <summary>The run takes more than 5 minutes or seems frozen</summary>
     <p>The data is downloaded from GitHub the first time, which usually takes 1 to 2 minutes. If nothing moves after 5 minutes, check your internet connection, wait for the run to end or fail, then run once more. Avoid pressing Run repeatedly.</p>
   </details>
@@ -576,7 +615,7 @@ body[data-track="core"] [data-track-only="challenge"],body[data-track="challenge
   </details>
   <details>
     <summary>My ranking is different from the table</summary>
-    <p>Check that: <code>precinct</code> is the key column in the Join, <code>loading_per_1k</code> is on <b>Inverse</b>, <code>population</code>, <code>violations</code> and <code>loading_supply</code> have weight <code>0</code>, and the Variables <code>date_from</code> and <code>date_to</code> are back to their original values.</p>
+    <p>Check that: both Join keys are <code>geoid</code>, <code>loading_per_1k</code> is on <b>Inverse</b>, <code>population</code>, <code>violations</code> and <code>loading_supply</code> have weight <code>0</code>, and the Variables <code>date_from</code> and <code>date_to</code> are back to their original values.</p>
   </details>
   <details>
     <summary>The map shows a source error</summary>

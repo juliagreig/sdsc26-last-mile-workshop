@@ -428,7 +428,7 @@
        "name": "lefttablecolumns",
        "title": "Left table columns",
        "type": "ColumnsForJoin",
-       "value": "[{\"name\": \"precinct\", \"joinname\": \"precinct\"}, {\"name\": \"geom\", \"joinname\": \"geom\"}]"
+       "value": "[{\"name\": \"precinct\", \"joinname\": \"geoid\"}, {\"name\": \"geom\", \"joinname\": \"geom\"}]"
       },
       {
        "name": "righttablekeycolumn",
@@ -480,13 +480,13 @@
        "name": "lefttablekeycolumn",
        "title": "Key column in left table",
        "type": "Column",
-       "value": "precinct"
+       "value": "geoid"
       },
       {
        "name": "lefttablecolumns",
        "title": "Left table columns",
        "type": "ColumnsForJoin",
-       "value": "[{\"name\": \"precinct\", \"joinname\": \"precinct\"}, {\"name\": \"geom\", \"joinname\": \"geom\"}, {\"name\": \"population\", \"joinname\": \"population\"}]"
+       "value": "[{\"name\": \"geoid\", \"joinname\": \"geoid\"}, {\"name\": \"geom\", \"joinname\": \"geom\"}, {\"name\": \"population\", \"joinname\": \"population\"}]"
       },
       {
        "name": "righttablekeycolumn",
@@ -538,13 +538,13 @@
        "name": "lefttablekeycolumn",
        "title": "Key column in left table",
        "type": "Column",
-       "value": "precinct"
+       "value": "geoid"
       },
       {
        "name": "lefttablecolumns",
        "title": "Left table columns",
        "type": "ColumnsForJoin",
-       "value": "[{\"name\": \"precinct\", \"joinname\": \"precinct\"}, {\"name\": \"geom\", \"joinname\": \"geom\"}, {\"name\": \"population\", \"joinname\": \"population\"}, {\"name\": \"violations\", \"joinname\": \"violations\"}]"
+       "value": "[{\"name\": \"geoid\", \"joinname\": \"geoid\"}, {\"name\": \"geom\", \"joinname\": \"geom\"}, {\"name\": \"population\", \"joinname\": \"population\"}, {\"name\": \"violations\", \"joinname\": \"violations\"}]"
       },
       {
        "name": "righttablekeycolumn",
@@ -651,7 +651,7 @@
      "width": 360,
      "height": 840,
      "inputs": [],
-     "markdown": "---\nlabel:\n---\n## 1 \u00b7 Load\nWe bring in three open datasets: parking tickets for commercial vehicles, precinct boundaries and loading zone signs. A small table adds how many people live in each precinct. Sign locations are converted into map coordinates."
+     "markdown": "---\nlabel:\n---\n## 1 · Load\nWe bring in three open datasets: parking tickets for commercial vehicles, precinct boundaries and loading zone signs. A small table adds how many people live in each precinct. Sign locations are converted into map coordinates."
     }
    },
    {
@@ -670,7 +670,7 @@
      "width": 540,
      "height": 840,
      "inputs": [],
-     "markdown": "---\nlabel:\n---\n## 2 \u00b7 Measure\nWe count what happens in each precinct: how many tickets were issued (demand) and how many legal loading zones exist (supply). Filters keep only our 10 precincts and the dates we care about. Change date_from and date_to in Variables to move the time window."
+     "markdown": "---\nlabel:\n---\n## 2 · Measure\nWe count what happens in each precinct: how many tickets were issued (demand) and how many legal loading zones exist (supply). Filters keep only our 10 precincts and the dates we care about. Change date_from and date_to in Variables to move the time window."
     }
    },
    {
@@ -689,7 +689,7 @@
      "width": 960,
      "height": 840,
      "inputs": [],
-     "markdown": "---\nlabel:\n---\n## 3 \u00b7 Combine and rate\nEverything goes into one table with one row per precinct. Then we divide by population: tickets per 1,000 residents and loading zones per 1,000 residents. Now small and large precincts can be compared fairly."
+     "markdown": "---\nlabel:\n---\n## 3 · Combine and rate\nEverything goes into one table with one row per precinct. Then we divide by population: tickets per 1,000 residents and loading zones per 1,000 residents. Now small and large precincts can be compared fairly."
     }
    },
    {

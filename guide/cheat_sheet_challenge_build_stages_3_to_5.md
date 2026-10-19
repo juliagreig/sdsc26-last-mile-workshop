@@ -27,8 +27,10 @@ Three Joins bring everything into one table with one row per precinct. Two Creat
 | Key column in left table | `precinct` |
 | Key column in right table | `precinct` |
 | Join type | `Left` |
-| Left table columns to keep | `precinct`, `geom` |
+| Left table columns to keep | `precinct`, renamed to `geoid` (type the new name next to it), and `geom` |
 | Right table columns to keep | `population` |
+
+Why rename? The score node you add later only accepts an identifier column called `geoid`, `h3`, `quadbin` or `index`. Renaming once here means every node after it uses `geoid`.
 
 ### Node 2: Join, called `3. Add violations`
 
@@ -36,10 +38,10 @@ Three Joins bring everything into one table with one row per precinct. Two Creat
 | --- | --- |
 | Left table | output of `3. Add population` |
 | Right table | output of `2. Precinct as text` |
-| Key column in left table | `precinct` |
+| Key column in left table | `geoid` |
 | Key column in right table | `violation_precinct` (the name differs from the left key) |
 | Join type | `Left` |
-| Left table columns to keep | `precinct`, `geom`, `population` |
+| Left table columns to keep | `geoid`, `geom`, `population` |
 | Right table columns to keep | `violations_sum`, renamed to `violations` |
 
 ### Node 3: Join, called `3. Add loading zones`
@@ -48,10 +50,10 @@ Three Joins bring everything into one table with one row per precinct. Two Creat
 | --- | --- |
 | Left table | output of `3. Add violations` |
 | Right table | output of `2. Count zones by precinct` |
-| Key column in left table | `precinct` |
+| Key column in left table | `geoid` |
 | Key column in right table | `precinct` |
 | Join type | `Left` |
-| Left table columns to keep | `precinct`, `geom`, `population`, `violations` |
+| Left table columns to keep | `geoid`, `geom`, `population`, `violations` |
 | Right table columns to keep | `order_number_count`, renamed to `loading_supply` |
 
 ### Node 4: Create Column, called `3. Demand per 1k`
