@@ -526,14 +526,14 @@ body[data-track="core"] [data-track-only="challenge"],body[data-track="challenge
 
 <!-- STEP 5 -->
 <article class="step" id="s5">
-  <header><div class="num">5</div><h2>Style the map</h2><span class="t">10 min</span></header>
+  <header><div class="num">5</div><h2>Style the map and add widgets</h2><span class="t">15 min</span></header>
   <div class="body">
     <ol class="todo">
       <li><input type="checkbox" id="c5a"><label for="c5a">Open the map: click the link in the results of the <code>4. Create map</code> node (Data tab), or find it in <b>Maps</b>.</label></li>
       <li><input type="checkbox" id="c5b"><label for="c5b"><b>Precincts layer.</b> Click <b>Layer 1</b>. In <b>Fill</b>, open the <b>Color</b> dropdown and pick the column <code>priority_index</code>. Choose a yellow to red palette and set opacity to about 70%.</label></li>
       <li><input type="checkbox" id="c5c"><label for="c5c"><b>Loading zones layer.</b> Click <b>Layer 2</b>. Keep it as small points (radius about 3 px) and pick a bright fill color so they stand out on the dark basemap.</label></li>
-      <li><input type="checkbox" id="c5d"><label for="c5d"><b>Widget.</b> Open the <b>Widgets</b> tab (second icon in the left bar) and add a <b>Histogram</b> on <code>priority_index</code>. Click a bar to filter the map to those precincts.</label></li>
       <li><input type="checkbox" id="c5e"><label for="c5e"><b>Basemap.</b> Optional: switch to a dark basemap with the basemap button at the bottom left of the map, so the colors pop.</label></li>
+      <li><input type="checkbox" id="c5d"><label for="c5d"><b>Widgets.</b> Add the four widgets described in the next section.</label></li>
     </ol>
     <p>Before and after:</p>
     <figure>
@@ -549,6 +549,43 @@ body[data-track="core"] [data-track-only="challenge"],body[data-track="challenge
       <figcaption>The styled map. Red precincts have the highest delivery pressure.</figcaption>
     </figure>
     <div class="see"><b>You should see</b><ul><li>Precincts shaded from light yellow (low pressure) to red (high pressure).</li><li>Loading zones as small bright points, clustered where legal curb space exists.</li><li>A histogram that filters the map when you click a bar.</li></ul></div>
+
+    <h3>Add widgets</h3>
+    <p>Widgets are the charts and numbers in the right hand panel of the map. They summarise your data and filter the map when you click them. Every widget is built on one <b>source</b> (here <b>Precincts</b> or <b>Loading Zones</b>) and works on that source's columns.</p>
+    <ol class="todo">
+      <li><input type="checkbox" id="w1"><label for="w1">In the left bar click the <b>Widgets</b> icon (second one, a chart). Click the <b>+</b> next to <b>Widgets</b>.</label></li>
+      <li><input type="checkbox" id="w2"><label for="w2">A small menu asks which <b>source</b> the widget is for. Pick <b>Precincts</b>. A new widget appears in the list and opens its settings.</label></li>
+      <li><input type="checkbox" id="w3"><label for="w3">Choose the widget type at the top of the settings (Formula, Category, Pie, Histogram, Range, Table) and fill in the <b>Data</b> section, as below.</label></li>
+      <li><input type="checkbox" id="w4"><label for="w4">To rename a widget use the three dots <b>⋮</b> next to its title, then <b>Rename</b>. To come back to its settings, use <b>⋮</b>, then <b>Widget options</b>.</label></li>
+    </ol>
+    <figure>
+      <img src="img/25-widgets-add-source.png" alt="The Widgets list with the plus button open, offering the sources Precincts and Loading Zones" loading="lazy">
+      <figcaption>The <b>+</b> button first asks which source the widget is for.</figcaption>
+    </figure>
+
+    <p>Build these four:</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Widget</th><th>Source</th><th>Type</th><th>Data settings</th></tr></thead>
+      <tbody>
+        <tr><td><b>Commercial tickets</b> (total, 204,575)</td><td>Precincts</td><td>Formula</td><td>Operation <code>SUM</code>, field <code>violations</code></td></tr>
+        <tr><td><b>Loading zones</b> (total, 2,496)</td><td>Loading Zones</td><td>Formula</td><td>Operation <code>COUNT</code> (the default, no field needed)</td></tr>
+        <tr><td><b>Tickets by precinct</b></td><td>Precincts</td><td>Category</td><td>Category <code>geoid</code>, Operation <code>SUM</code>, Aggregation Column <code>violations</code></td></tr>
+        <tr><td><b>Priority index distribution</b></td><td>Precincts</td><td>Histogram</td><td>Column <code>priority_index</code>, Buckets <code>10</code></td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Category widget: where does violations go?</h3>
+    <p>A category widget groups rows by a <b>category column</b>, which is text: here <code>geoid</code>, the precinct number. It then calculates a number for each group. You choose that number with the <b>Operation</b>: <code>COUNT</code> only counts the rows (every precinct would show 1). To add up tickets, change the operation to <code>SUM</code>. A new field called <b>Aggregation Column</b> then appears: pick <code>violations</code> there. So <code>violations</code> is not the category column, it is the aggregation column.</p>
+    <figure>
+      <img src="img/26-widget-category.png" alt="Category widget settings: by geoid, operation SUM, aggregation column violations" style="max-width:300px" loading="lazy">
+      <figcaption>Category widget: grouped by <code>geoid</code>, summing <code>violations</code>.</figcaption>
+    </figure>
+    <div class="pair narrow">
+      <figure><img src="img/27-widget-formula.png" alt="Formula widget settings: operation SUM on violations" loading="lazy"><figcaption>Formula widget: <code>SUM</code> of <code>violations</code> (204575 tickets).</figcaption></figure>
+      <figure><img src="img/28-widget-histogram.png" alt="Histogram widget settings: column priority_index with 30 buckets" loading="lazy"><figcaption>Histogram widget on <code>priority_index</code>. Lower Buckets to about 10.</figcaption></figure>
+    </div>
+    <div class="tip"><p><b>The finished map in the slides has two more widgets</b> (tickets by violation type and by month). They come from a larger ticket table that is not part of the map your workflow creates, so you cannot build those two here. The four widgets above use the columns of your own workflow results. Optional extra: a <b>Category</b> widget on <b>Loading Zones</b>, category <code>zone_type</code>, operation <code>COUNT</code>, shows how many loading zones of each kind there are.</p></div>
+    <div class="see"><b>You should see</b><ul><li>In the right panel: the ticket total, the loading zone total, a ranked list of precincts (14 first, then 18 and 1) and a histogram of the score.</li><li>Click a precinct row or a histogram bar: the map filters to those precincts. Click it again to clear.</li></ul></div>
   </div>
 </article>
 
